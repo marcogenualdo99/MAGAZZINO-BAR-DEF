@@ -265,8 +265,13 @@
 <body>
 
 <header>
-  <h1>🍺 Magazzino Bar</h1>
-  <p>Centro Vacanze Garden River</p>
+  <div style="display:flex;align-items:center;justify-content:space-between">
+    <div>
+      <h1>🍺 Magazzino Bar</h1>
+      <p>Centro Vacanze Garden River</p>
+    </div>
+    <button onclick="forceSync()" id="sync-btn" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:8px;color:white;padding:6px 10px;font-size:13px;cursor:pointer;">🔄 Sync</button>
+  </div>
   <div class="header-bar"></div>
 </header>
 
@@ -723,35 +728,61 @@ async function saveToSheet() {
   btn.innerHTML = '💾 Salva aggiornamento';
 }
 
-async function loadFromSheet() {
-  if (!sheetsUrl) return;
-  try {
-    // Aggiungiamo callback JSONP per aggirare CORS in lettura
-    const urlWithCb = sheetsUrl + '?callback=jsonpCallback';
-    await new Promise((resolve, reject) => {
-      window.jsonpCallback = function(rows) {
-        if (!Array.isArray(rows) || rows.length < 2) { resolve(); return; }
-        const header = rows[0];
-        const ni = header.indexOf('nome'), ci = header.indexOf('categoria'),
-              mi = header.indexOf('minimo'), xi = header.indexOf('pz_cartone'),
-              pi = header.indexOf('pezzi'), fi = header.indexOf('fornitore');
-        if (ni < 0) { resolve(); return; }
-        products = rows.slice(1).map(r => ({
-          name: r[ni], cat: r[ci], min: parseInt(r[mi])||0,
-          pxc: parseInt(r[xi])||1, pz: parseInt(r[pi])||0, forn: r[fi]||'Altro'
-        })).filter(p => p.name);
+async function loadFromSheet(showMsg) {
+  if (!sheetsUrl) return false;
+  return new Promise((resolve) => {
+    // Rimuovi script JSONP precedente se esiste
+    const old = document.getElementById('jsonp-script');
+    if (old) old.remove();
+
+    const cbName = 'jsonpCb_' + Date.now();
+    window[cbName] = function(rows) {
+      delete window[cbName];
+      if (!Array.isArray(rows) || rows.length < 2) { resolve(false); return; }
+      const header = rows[0];
+      const ni = header.indexOf('nome'), ci = header.indexOf('categoria'),
+            mi = header.indexOf('minimo'), xi = header.indexOf('pz_cartone'),
+            pi = header.indexOf('pezzi'), fi = header.indexOf('fornitore');
+      if (ni < 0) { resolve(false); return; }
+      const loaded = rows.slice(1).map(r => ({
+        name: String(r[ni]||'').trim(), cat: String(r[ci]||''),
+        min: parseInt(r[mi])||0, pxc: parseInt(r[xi])||1,
+        pz: parseInt(r[pi])||0, forn: String(r[fi]||'Altro')
+      })).filter(p => p.name);
+      if (loaded.length > 0) {
+        products = loaded;
         localStorage.setItem('gr_products', JSON.stringify(products));
         render();
-        showToast('✅ Dati caricati da Google Sheets');
-        resolve();
-      };
-      const s = document.createElement('script');
-      s.src = sheetsUrl;
-      s.onerror = () => { showToast('⚠️ Lettura non disponibile — uso dati locali'); resolve(); };
-      document.head.appendChild(s);
-      setTimeout(resolve, 5000);
-    });
-  } catch(e) { /* usa dati locali */ }
+        if (showMsg) showToast('✅ Dati aggiornati da Google Sheets');
+      }
+      resolve(true);
+    };
+
+    const s = document.createElement('script');
+    s.id = 'jsonp-script';
+    // Aggiungi timestamp per evitare cache
+    s.src = sheetsUrl + '?callback=' + cbName + '&t=' + Date.now();
+    s.onerror = () => {
+      delete window[cbName];
+      if (showMsg) showToast('⚠️ Lettura non disponibile — uso dati locali');
+      resolve(false);
+    };
+    document.head.appendChild(s);
+    setTimeout(() => {
+      delete window[cbName];
+      resolve(false);
+    }, 8000);
+  });
+}
+
+async function forceSync() {
+  const btn = document.getElementById('sync-btn');
+  btn.textContent = '⏳';
+  btn.style.opacity = '0.6';
+  const ok = await loadFromSheet(true);
+  btn.textContent = '🔄 Sync';
+  btn.style.opacity = '1';
+  if (!ok) showToast('⚠️ Impossibile sincronizzare — controlla la connessione');
 }
 
 // ── WHATSAPP ─────────────────────────────────────────────────────────────────
