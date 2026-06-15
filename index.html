@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Magazzino Bar · Garden River</title>
+<style>
+  :root {
+    --brand-dark: #1B4332;
+    --brand-mid: #2D6A4F;
+    --brand-light: #52B788;
+    --brand-pale: #D8F3DC;
+    --red:    #C0392B; --red-bg:    #FDECEA; --red-bd:    #E57373;
+    --amber:  #B7770D; --amber-bg:  #FEF9E7; --amber-bd:  #F0C040;
+    --green:  #1E6B3C; --green-bg:  #EAF7EF; --green-bd:  #66BB6A;
+    --gray:   #555;    --gray-bg:   #F5F5F5;
+    --white:  #FFFFFF;
+    --shadow: 0 2px 12px rgba(0,0,0,0.10);
+    --radius: 12px;
+    --font: 'Segoe UI', Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font); background: #F0F4F2; color: #222; min-height: 100vh; }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--brand-dark);
+    color: white;
+    padding: 14px 16px 10px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: var(--shadow);
+  }
+  header h1 { font-size: 17px; font-weight: 700; letter-spacing: .3px; }
+  header p  { font-size: 11px; opacity: .7; margin-top: 2px; }
+  .header-bar { height: 4px; background: var(--brand-light); margin: 10px -16px -10px; }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex; background: var(--brand-mid);
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex: 1; min-width: 80px; padding: 10px 8px;
+    text-align: center; font-size: 12px; font-weight: 600;
+    color: rgba(255,255,255,.65); cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all .2s; white-space: nowrap;
+  }
+  .tab.active { color: white; border-bottom-color: var(--brand-light); }
+
+  /* ── MAIN ── */
+  main { padding: 12px 12px 80px; max-width: 700px; margin: 0 auto; }
+
+  /* ── ALERT CARDS ── */
+  .alert-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+  .alert-card {
+    border-radius: 10px; padding: 10px 8px; text-align: center;
+    border: 1.5px solid;
+  }
+  .alert-card .num  { font-size: 28px; font-weight: 800; line-height: 1; }
+  .alert-card .lbl  { font-size: 10px; font-weight: 600; margin-top: 3px; opacity: .85; }
+  .alert-card.red   { background: var(--red-bg);   border-color: var(--red-bd);   color: var(--red); }
+  .alert-card.amber { background: var(--amber-bg); border-color: var(--amber-bd); color: var(--amber); }
+  .alert-card.green { background: var(--green-bg); border-color: var(--green-bd); color: var(--green); }
+
+  /* ── SEARCH ── */
+  .search-wrap { position: relative; margin-bottom: 12px; }
+  .search-wrap input {
+    width: 100%; padding: 10px 12px 10px 36px;
+    border: 1.5px solid #D0D8D4; border-radius: 10px;
+    font-size: 14px; background: white; outline: none;
+  }
+  .search-wrap input:focus { border-color: var(--brand-light); }
+  .search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); font-size: 16px; opacity: .4; }
+
+  /* ── CATEGORY ── */
+  .cat-block { margin-bottom: 10px; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+  .cat-header {
+    padding: 10px 14px; font-size: 13px; font-weight: 700;
+    color: white; display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer; user-select: none;
+  }
+  .cat-header .badge {
+    background: rgba(255,255,255,.25); border-radius: 20px;
+    padding: 2px 8px; font-size: 11px; font-weight: 600;
+  }
+  .cat-colors { --c: #1565C0; }
+
+  /* ── PRODUCT ROW ── */
+  .product-list { background: white; }
+  .product-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; border-bottom: 1px solid #EEF2F0;
+    transition: background .15s;
+  }
+  .product-row:last-child { border-bottom: none; }
+  .product-row.stato-red   { background: var(--red-bg); }
+  .product-row.stato-amber { background: var(--amber-bg); }
+  .product-row.stato-green { background: white; }
+  .product-info { flex: 1; min-width: 0; }
+  .product-name { font-size: 13px; font-weight: 600; color: #222; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .product-meta { font-size: 11px; color: #888; margin-top: 2px; }
+  .status-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .dot-red   { background: var(--red); }
+  .dot-amber { background: var(--amber); }
+  .dot-green { background: var(--green); }
+  .qty-input-wrap { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .qty-btn {
+    width: 32px; height: 32px; border-radius: 8px; border: 1.5px solid #D0D8D4;
+    background: white; font-size: 18px; line-height: 1; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--brand-mid); font-weight: 700; transition: background .15s;
+  }
+  .qty-btn:active { background: var(--brand-pale); }
+  .qty-val {
+    width: 52px; text-align: center; font-size: 15px; font-weight: 700;
+    border: 1.5px solid #E0C040; border-radius: 8px; padding: 4px 0;
+    background: #FFFDE7; color: #333; outline: none;
+  }
+  .qty-unit { font-size: 10px; color: #888; flex-shrink: 0; }
+
+  /* ── SAVE BTN ── */
+  .save-fab {
+    position: fixed; bottom: 20px; right: 16px; left: 16px; max-width: 400px; margin: 0 auto;
+    background: var(--brand-mid); color: white;
+    border: none; border-radius: 14px; padding: 14px;
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(45,106,79,.4);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: background .2s;
+  }
+  .save-fab:active { background: var(--brand-dark); }
+  .save-fab.saving { opacity: .7; pointer-events: none; }
+
+  /* ── ADD PRODUCT FORM ── */
+  .form-card {
+    background: white; border-radius: var(--radius);
+    padding: 16px; box-shadow: var(--shadow); margin-bottom: 12px;
+  }
+  .form-card h3 { font-size: 14px; font-weight: 700; color: var(--brand-dark); margin-bottom: 14px; }
+  .form-group { margin-bottom: 12px; }
+  .form-group label { display: block; font-size: 12px; font-weight: 600; color: #555; margin-bottom: 5px; }
+  .form-group input, .form-group select {
+    width: 100%; padding: 10px 12px; border: 1.5px solid #D0D8D4;
+    border-radius: 10px; font-size: 14px; outline: none; background: white;
+  }
+  .form-group input:focus, .form-group select:focus { border-color: var(--brand-light); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .btn-add {
+    width: 100%; padding: 12px; background: var(--brand-mid); color: white;
+    border: none; border-radius: 10px; font-size: 14px; font-weight: 700;
+    cursor: pointer; margin-top: 4px;
+  }
+  .btn-add:active { background: var(--brand-dark); }
+
+  /* ── ORDINE TAB ── */
+  .order-card {
+    background: white; border-radius: var(--radius);
+    box-shadow: var(--shadow); overflow: hidden; margin-bottom: 10px;
+  }
+  .order-header {
+    padding: 10px 14px; font-size: 13px; font-weight: 700; color: white;
+  }
+  .order-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; border-bottom: 1px solid #EEF2F0;
+  }
+  .order-row:last-child { border-bottom: none; }
+  .order-name { font-size: 13px; font-weight: 600; }
+  .order-detail { font-size: 11px; color: #888; margin-top: 2px; }
+  .order-badge {
+    background: var(--red-bg); color: var(--red);
+    border: 1px solid var(--red-bd); border-radius: 20px;
+    padding: 3px 10px; font-size: 12px; font-weight: 700; flex-shrink: 0;
+  }
+
+  /* ── SETUP ── */
+  .setup-card { background: white; border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
+  .setup-card h3 { font-size: 14px; font-weight: 700; color: var(--brand-dark); margin-bottom: 6px; }
+  .setup-card p  { font-size: 13px; color: #555; line-height: 1.6; margin-bottom: 12px; }
+  .setup-card code {
+    display: block; background: #F0F4F2; border-radius: 8px;
+    padding: 10px 12px; font-size: 12px; word-break: break-all;
+    color: var(--brand-dark); margin: 8px 0;
+  }
+  .step { display: flex; gap: 10px; margin-bottom: 12px; }
+  .step-num {
+    width: 26px; height: 26px; border-radius: 50%; background: var(--brand-mid);
+    color: white; font-size: 13px; font-weight: 700; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .step-text { font-size: 13px; color: #444; line-height: 1.5; padding-top: 2px; }
+  .input-url { width: 100%; padding: 10px 12px; border: 1.5px solid #D0D8D4; border-radius: 10px; font-size: 13px; outline: none; margin: 6px 0 10px; }
+  .input-url:focus { border-color: var(--brand-light); }
+  .btn-connect {
+    width: 100%; padding: 12px; background: var(--brand-mid); color: white;
+    border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer;
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: #222; color: white; padding: 10px 20px; border-radius: 20px;
+    font-size: 13px; opacity: 0; transition: all .3s; pointer-events: none; white-space: nowrap; z-index: 999;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ── HIDDEN ── */
+  .hidden { display: none !important; }
+  .section { display: none; }
+  .section.active { display: block; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🍺 Magazzino Bar</h1>
+  <p>Centro Vacanze Garden River</p>
+  <div class="header-bar"></div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('giacenze')">📦 Giacenze</div>
+  <div class="tab" onclick="switchTab('ordine')">📋 Ordine</div>
+  <div class="tab" onclick="switchTab('aggiungi')">➕ Prodotto</div>
+  <div class="tab" onclick="switchTab('setup')">⚙️ Setup</div>
+</div>
+
+<main>
+
+  <!-- ══ TAB GIACENZE ══ -->
+  <div id="sec-giacenze" class="section active">
+    <div class="alert-grid">
+      <div class="alert-card red">
+        <div class="num" id="cnt-red">–</div>
+        <div class="lbl">🔴 Esauriti</div>
+      </div>
+      <div class="alert-card amber">
+        <div class="num" id="cnt-amber">–</div>
+        <div class="lbl">🟠 Da ordinare</div>
+      </div>
+      <div class="alert-card green">
+        <div class="num" id="cnt-green">–</div>
+        <div class="lbl">🟢 OK</div>
+      </div>
+    </div>
+
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="Cerca prodotto…" oninput="renderGiacenze()">
+    </div>
+
+    <div id="giacenze-list"></div>
+  </div>
+
+  <!-- ══ TAB ORDINE ══ -->
+  <div id="sec-ordine" class="section">
+    <div id="ordine-list"></div>
+  </div>
+
+  <!-- ══ TAB AGGIUNGI ══ -->
+  <div id="sec-aggiungi" class="section">
+    <div class="form-card">
+      <h3>➕ Aggiungi nuovo prodotto</h3>
+      <div class="form-group">
+        <label>Nome prodotto</label>
+        <input type="text" id="new-name" placeholder="es. Birra Corona 33cl">
+      </div>
+      <div class="form-group">
+        <label>Categoria</label>
+        <select id="new-cat">
+          <option value="💧 ACQUE">💧 Acque</option>
+          <option value="🥤 BIBITE">🥤 Bibite</option>
+          <option value="🍺 BIRRE">🍺 Birre</option>
+          <option value="🍹 ALCOLICI & APERITIVI">🍹 Alcolici & Aperitivi</option>
+          <option value="🧃 SUCCHI AMITA">🧃 Succhi Amita</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Minimo pezzi</label>
+          <input type="number" id="new-min" placeholder="es. 24" min="0">
+        </div>
+        <div class="form-group">
+          <label>Pz per cartone</label>
+          <input type="number" id="new-pxc" placeholder="es. 24" min="1">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Fornitore</label>
+        <input type="text" id="new-fornitore" placeholder="es. Cupra Bibite" value="Cupra Bibite">
+      </div>
+      <div class="form-group">
+        <label>Giacenza iniziale (pezzi)</label>
+        <input type="number" id="new-pezzi" placeholder="0" min="0" value="0">
+      </div>
+      <button class="btn-add" onclick="addProduct()">➕ Aggiungi al magazzino</button>
+    </div>
+  </div>
+
+  <!-- ══ TAB SETUP ══ -->
+  <div id="sec-setup" class="section">
+    <div class="setup-card">
+      <h3>⚙️ Collegamento Google Sheets</h3>
+      <p>Per salvare i dati su Google Sheets segui questi passaggi:</p>
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">Apri <strong>Google Sheets</strong> e crea un nuovo foglio. Rinominalo <strong>"Magazzino Bar"</strong>.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">Nel foglio, vai su <strong>Estensioni → Apps Script</strong> e incolla lo script qui sotto, poi clicca Salva e Esegui (autorizza quando richiesto).</div>
+      </div>
+      <code>// Incolla questo script in Apps Script
+function doGet(e) {
+  return ContentService.createTextOutput(
+    JSON.stringify(getData())).setMimeType(ContentService.MimeType.JSON);
+}
+function doPost(e) {
+  var data = JSON.parse(e.postData.contents);
+  saveData(data);
+  return ContentService.createTextOutput("OK");
+}
+function getData() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sh = ss.getSheetByName("Magazzino") || ss.getActiveSheet();
+  var rows = sh.getDataRange().getValues();
+  return rows;
+}
+function saveData(rows) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sh = ss.getSheetByName("Magazzino") || ss.getActiveSheet();
+  sh.clearContents();
+  sh.getRange(1,1,rows.length,rows[0].length).setValues(rows);
+}</code>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">In Apps Script clicca <strong>Distribuisci → Nuova distribuzione → App web</strong>. Imposta "Chiunque" come accesso e copia l'URL generato.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-text">Incolla l'URL qui sotto e clicca Connetti:</div>
+      </div>
+
+      <input type="url" class="input-url" id="sheets-url" placeholder="https://script.google.com/macros/s/..." value="">
+      <button class="btn-connect" onclick="connectSheet()">🔗 Connetti Google Sheet</button>
+
+      <p id="connect-status" style="margin-top:10px;font-size:13px;color:var(--green);font-weight:600;"></p>
+
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid #EEF2F0;">
+        <p style="font-size:12px;color:#888;">
+          💾 I dati vengono salvati localmente sul dispositivo anche senza connessione.<br>
+          Quando sei online, premi <strong>Salva</strong> per sincronizzare con Google Sheets.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<button class="save-fab hidden" id="save-btn" onclick="saveToSheet()">
+  💾 Salva aggiornamento
+</button>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── COLORI CATEGORIA ─────────────────────────────────────────────────────────
+const CAT_COLORS = {
+  "💧 ACQUE":                {"h":"1565C0","e":"E3F2FD","o":"BBDEFB"},
+  "🥤 BIBITE":               {"h":"E53935","e":"FDE8E8","o":"FFCDD2"},
+  "🍺 BIRRE":                {"h":"6D4C41","e":"EFEBE9","o":"D7CCC8"},
+  "🍹 ALCOLICI & APERITIVI": {"h":"6A1B9A","e":"F3E5F5","o":"E1BEE7"},
+  "🧃 SUCCHI AMITA":         {"h":"2E7D32","e":"E8F5E9","o":"C8E6C9"},
+};
+
+// ── STATO LOCALE ─────────────────────────────────────────────────────────────
+let products = [];
+let sheetsUrl = localStorage.getItem('gr_sheets_url') || '';
+let modified = false;
+
+// ── DATI DEFAULT ─────────────────────────────────────────────────────────────
+const DEFAULT_PRODUCTS = [
+  {name:"Acqua pet 1L Naturale",       cat:"💧 ACQUE",                min:24, pxc:12, pz:1,  forn:"Cupra Bibite"},
+  {name:"Acqua pet 0.5L Naturale",     cat:"💧 ACQUE",                min:48, pxc:24, pz:2,  forn:"Cupra Bibite"},
+  {name:"Acqua pet 1L Frizzante",      cat:"💧 ACQUE",                min:280,pxc:12, pz:18, forn:"Cupra Bibite"},
+  {name:"Acqua pet 0.5L Frizzante",    cat:"💧 ACQUE",                min:48, pxc:24, pz:4,  forn:"Cupra Bibite"},
+  {name:"Acqua Tonica",                cat:"💧 ACQUE",                min:24, pxc:24, pz:12, forn:"Cupra Bibite"},
+  {name:"Crodino",                     cat:"💧 ACQUE",                min:20, pxc:24, pz:24, forn:"Cupra Bibite"},
+  {name:"Coca Cola 1.5L",              cat:"🥤 BIBITE",               min:12, pxc:6,  pz:0,  forn:"Cupra Bibite"},
+  {name:"Coca Cola litro vetro",       cat:"🥤 BIBITE",               min:12, pxc:12, pz:1,  forn:"Cupra Bibite"},
+  {name:"Coca Cola 33cl",              cat:"🥤 BIBITE",               min:24, pxc:24, pz:2,  forn:"Cupra Bibite"},
+  {name:"Coca Cola Zero 33cl",         cat:"🥤 BIBITE",               min:24, pxc:24, pz:1,  forn:"Cupra Bibite"},
+  {name:"Coca Cola Zero Zero 33cl",    cat:"🥤 BIBITE",               min:24, pxc:24, pz:1,  forn:"Cupra Bibite"},
+  {name:"Fanta 33cl",                  cat:"🥤 BIBITE",               min:24, pxc:24, pz:2,  forn:"Cupra Bibite"},
+  {name:"Sprite 33cl",                 cat:"🥤 BIBITE",               min:24, pxc:24, pz:12, forn:"Cupra Bibite"},
+  {name:"Lemon Soda",                  cat:"🥤 BIBITE",               min:24, pxc:24, pz:0,  forn:"Cupra Bibite"},
+  {name:"Soda al Pompelmo",            cat:"🥤 BIBITE",               min:24, pxc:24, pz:0,  forn:"Cupra Bibite"},
+  {name:"Esta Thé Brick Pesca",        cat:"🥤 BIBITE",               min:24, pxc:24, pz:3,  forn:"Cupra Bibite"},
+  {name:"Esta Thé Brick Limone",       cat:"🥤 BIBITE",               min:24, pxc:24, pz:3,  forn:"Cupra Bibite"},
+  {name:"Monster",                     cat:"🥤 BIBITE",               min:12, pxc:24, pz:36, forn:"Cupra Bibite"},
+  {name:"Powerade Rossa 50cl",         cat:"🥤 BIBITE",               min:12, pxc:12, pz:0,  forn:"Cupra Bibite"},
+  {name:"Powerade Blu 50cl",           cat:"🥤 BIBITE",               min:12, pxc:12, pz:0,  forn:"Cupra Bibite"},
+  {name:"Powerade Arancione 50cl",     cat:"🥤 BIBITE",               min:12, pxc:12, pz:0,  forn:"Cupra Bibite"},
+  {name:"RedBull 25cl",                cat:"🥤 BIBITE",               min:24, pxc:24, pz:0,  forn:"Cupra Bibite"},
+  {name:"RedBull Zero 25cl",           cat:"🥤 BIBITE",               min:12, pxc:24, pz:0,  forn:"Cupra Bibite"},
+  {name:"Campari",                     cat:"🥤 BIBITE",               min:2,  pxc:6,  pz:1,  forn:"Cupra Bibite"},
+  {name:"Birra alla spina (fusto)",    cat:"🍺 BIRRE",                min:1,  pxc:1,  pz:0,  forn:"Cupra Bibite"},
+  {name:"Heineken 33cl",               cat:"🍺 BIRRE",                min:24, pxc:24, pz:1,  forn:"Cupra Bibite"},
+  {name:"Tennent's 33cl",              cat:"🍺 BIRRE",                min:24, pxc:24, pz:0,  forn:"Cupra Bibite"},
+  {name:"Ichnusa non filtrata 33cl",   cat:"🍺 BIRRE",                min:24, pxc:24, pz:1,  forn:"Cupra Bibite"},
+  {name:"Messina Cristalli Sale 33cl", cat:"🍺 BIRRE",                min:24, pxc:24, pz:0,  forn:"Cupra Bibite"},
+  {name:"Corona 33cl",                 cat:"🍺 BIRRE",                min:24, pxc:24, pz:1,  forn:"Cupra Bibite"},
+  {name:"Ceres 33cl",                  cat:"🍺 BIRRE",                min:24, pxc:24, pz:0,  forn:"Cupra Bibite"},
+  {name:"Moretti Filtrata Freddo 33cl",cat:"🍺 BIRRE",                min:24, pxc:24, pz:1,  forn:"Cupra Bibite"},
+  {name:"Moretti Filtrata Freddo 66cl",cat:"🍺 BIRRE",                min:15, pxc:15, pz:0,  forn:"Cupra Bibite"},
+  {name:"Moretti Rossa 33cl",          cat:"🍺 BIRRE",                min:24, pxc:24, pz:0,  forn:"Cupra Bibite"},
+  {name:"Moretti Bionda 33cl",         cat:"🍺 BIRRE",                min:24, pxc:24, pz:0,  forn:"Cupra Bibite"},
+  {name:"Moretti Bionda 66cl",         cat:"🍺 BIRRE",                min:15, pxc:15, pz:0,  forn:"Cupra Bibite"},
+  {name:"Peroni 33cl",                 cat:"🍺 BIRRE",                min:24, pxc:24, pz:0,  forn:"Cupra Bibite"},
+  {name:"Peroni 66cl",                 cat:"🍺 BIRRE",                min:15, pxc:15, pz:0,  forn:"Cupra Bibite"},
+  {name:"Raffo 33cl",                  cat:"🍺 BIRRE",                min:24, pxc:24, pz:1,  forn:"Cupra Bibite"},
+  {name:"Messina Vivace 33cl",         cat:"🍺 BIRRE",                min:24, pxc:24, pz:1,  forn:"Cupra Bibite"},
+  {name:"Leffe 33cl",                  cat:"🍺 BIRRE",                min:24, pxc:24, pz:0,  forn:"Cupra Bibite"},
+  {name:"Birra senza Glutine 33cl",    cat:"🍺 BIRRE",                min:12, pxc:24, pz:0,  forn:"Cupra Bibite"},
+  {name:"Hoegaarden Bianca 33cl",      cat:"🍺 BIRRE",                min:24, pxc:24, pz:0,  forn:"Cupra Bibite"},
+  {name:"Aperol",                      cat:"🍹 ALCOLICI & APERITIVI", min:20, pxc:11, pz:1,  forn:"Cupra Bibite"},
+  {name:"Amaro del Capo",              cat:"🍹 ALCOLICI & APERITIVI", min:24, pxc:24, pz:3,  forn:"Cupra Bibite"},
+  {name:"Jagermeister 100cl",          cat:"🍹 ALCOLICI & APERITIVI", min:1,  pxc:1,  pz:0,  forn:"Cupra Bibite"},
+  {name:"Grappa Lucano Barocca 70cl",  cat:"🍹 ALCOLICI & APERITIVI", min:1,  pxc:1,  pz:0,  forn:"Cupra Bibite"},
+  {name:"Molinari Sambuca 100cl",      cat:"🍹 ALCOLICI & APERITIVI", min:1,  pxc:1,  pz:0,  forn:"Cupra Bibite"},
+  {name:"Amita Ace 20cl",              cat:"🧃 SUCCHI AMITA",         min:20, pxc:24, pz:0,  forn:"Cupra Bibite"},
+  {name:"Amita Ananas 20cl",           cat:"🧃 SUCCHI AMITA",         min:20, pxc:24, pz:0,  forn:"Cupra Bibite"},
+  {name:"Amita Arancia 20cl",          cat:"🧃 SUCCHI AMITA",         min:20, pxc:24, pz:0,  forn:"Cupra Bibite"},
+  {name:"Amita Pesca 20cl",            cat:"🧃 SUCCHI AMITA",         min:20, pxc:24, pz:0,  forn:"Cupra Bibite"},
+  {name:"Amita Pera 20cl",             cat:"🧃 SUCCHI AMITA",         min:20, pxc:24, pz:0,  forn:"Cupra Bibite"},
+  {name:"Amita Albicocca 20cl",        cat:"🧃 SUCCHI AMITA",         min:20, pxc:24, pz:0,  forn:"Cupra Bibite"},
+  {name:"Amita Mirtillo 20cl",         cat:"🧃 SUCCHI AMITA",         min:20, pxc:24, pz:0,  forn:"Cupra Bibite"},
+];
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+function init() {
+  const saved = localStorage.getItem('gr_products');
+  products = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
+  if (sheetsUrl) {
+    document.getElementById('sheets-url').value = sheetsUrl;
+    document.getElementById('connect-status').textContent = '✅ Google Sheet connesso';
+    loadFromSheet();
+  }
+  render();
+}
+
+function stato(p) {
+  if (p.pz === 0)       return 'red';
+  if (p.pz < p.min)     return 'amber';
+  return 'green';
+}
+function cartoniFabbisogno(p) {
+  if (p.pz >= p.min) return 0;
+  return Math.ceil((p.min - p.pz) / p.pxc);
+}
+
+// ── RENDER ───────────────────────────────────────────────────────────────────
+function render() {
+  renderAlerts();
+  renderGiacenze();
+  renderOrdine();
+}
+
+function renderAlerts() {
+  const r = products.filter(p => stato(p)==='red').length;
+  const a = products.filter(p => stato(p)==='amber').length;
+  const g = products.filter(p => stato(p)==='green').length;
+  document.getElementById('cnt-red').textContent   = r;
+  document.getElementById('cnt-amber').textContent = a;
+  document.getElementById('cnt-green').textContent = g;
+}
+
+function renderGiacenze() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  const bycat = {};
+  products.forEach((p, idx) => {
+    if (q && !p.name.toLowerCase().includes(q)) return;
+    if (!bycat[p.cat]) bycat[p.cat] = [];
+    bycat[p.cat].push({...p, idx});
+  });
+
+  const order = ["💧 ACQUE","🥤 BIBITE","🍺 BIRRE","🍹 ALCOLICI & APERITIVI","🧃 SUCCHI AMITA"];
+  let html = '';
+  order.forEach(cat => {
+    if (!bycat[cat] || bycat[cat].length === 0) return;
+    const cc = CAT_COLORS[cat] || {h:'888888',e:'F5F5F5',o:'EEEEEE'};
+    const critico = bycat[cat].filter(p => stato(p) !== 'green').length;
+    html += `<div class="cat-block">
+      <div class="cat-header" style="background:#${cc.h}" onclick="toggleCat(this)">
+        <span>${cat}</span>
+        ${critico > 0 ? `<span class="badge">⚠️ ${critico}</span>` : '<span class="badge">✓</span>'}
+      </div>
+      <div class="product-list">`;
+    bycat[cat].forEach(p => {
+      const s = stato(p);
+      const cart = cartoniFabbisogno(p);
+      const meta = s !== 'green'
+        ? `Min ${p.min} pz · Ordina ${cart} carton${cart===1?'e':'i'}`
+        : `Min ${p.min} pz · ${p.pxc} pz/cartone`;
+      html += `<div class="product-row stato-${s}">
+        <div class="status-dot dot-${s}"></div>
+        <div class="product-info">
+          <div class="product-name">${p.name}</div>
+          <div class="product-meta">${meta}</div>
+        </div>
+        <div class="qty-input-wrap">
+          <button class="qty-btn" onclick="changeQty(${p.idx},-1)">−</button>
+          <input class="qty-val" type="number" min="0" value="${p.pz}"
+            onchange="setQty(${p.idx}, this.value)"
+            oninput="setQty(${p.idx}, this.value)">
+          <span class="qty-unit">pz</span>
+          <button class="qty-btn" onclick="changeQty(${p.idx},+1)">+</button>
+        </div>
+      </div>`;
+    });
+    html += `</div></div>`;
+  });
+  document.getElementById('giacenze-list').innerHTML = html || '<p style="text-align:center;padding:30px;color:#888">Nessun prodotto trovato</p>';
+}
+
+function renderOrdine() {
+  const critici = products.filter(p => stato(p) !== 'green');
+  if (critici.length === 0) {
+    document.getElementById('ordine-list').innerHTML =
+      '<div style="text-align:center;padding:40px;color:var(--green);font-size:15px;font-weight:700">🟢 Tutto ok — nessun prodotto da ordinare!</div>';
+    return;
+  }
+  const byForn = {};
+  critici.forEach(p => {
+    if (!byForn[p.forn]) byForn[p.forn] = [];
+    byForn[p.forn].push(p);
+  });
+  let html = '';
+  Object.entries(byForn).forEach(([forn, prods]) => {
+    html += `<div class="order-card">
+      <div class="order-header" style="background:var(--brand-dark)">📦 ${forn}</div>`;
+    prods.forEach(p => {
+      const cart = cartoniFabbisogno(p);
+      const label = stato(p)==='red' ? '🔴 ESAURITO' : `🟠 ${cart} carton${cart===1?'e':'i'}`;
+      html += `<div class="order-row">
+        <div>
+          <div class="order-name">${p.name}</div>
+          <div class="order-detail">${p.pz} pz presenti · min ${p.min} pz</div>
+        </div>
+        <div class="order-badge">${label}</div>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+  document.getElementById('ordine-list').innerHTML = html;
+}
+
+// ── INTERAZIONI ───────────────────────────────────────────────────────────────
+function toggleCat(el) {
+  const list = el.nextElementSibling;
+  list.style.display = list.style.display === 'none' ? '' : 'none';
+}
+
+function changeQty(idx, delta) {
+  const newVal = Math.max(0, (products[idx].pz || 0) + delta);
+  products[idx].pz = newVal;
+  markModified();
+  render();
+}
+
+function setQty(idx, val) {
+  const newVal = Math.max(0, parseInt(val) || 0);
+  products[idx].pz = newVal;
+  markModified();
+  renderAlerts();
+  renderOrdine();
+}
+
+function markModified() {
+  modified = true;
+  localStorage.setItem('gr_products', JSON.stringify(products));
+  document.getElementById('save-btn').classList.remove('hidden');
+}
+
+function addProduct() {
+  const name = document.getElementById('new-name').value.trim();
+  const cat  = document.getElementById('new-cat').value;
+  const min  = parseInt(document.getElementById('new-min').value) || 0;
+  const pxc  = parseInt(document.getElementById('new-pxc').value) || 1;
+  const forn = document.getElementById('new-fornitore').value.trim() || 'Altro';
+  const pz   = parseInt(document.getElementById('new-pezzi').value) || 0;
+  if (!name) { showToast('⚠️ Inserisci il nome del prodotto'); return; }
+  products.push({name, cat, min, pxc, pz, forn});
+  markModified();
+  render();
+  document.getElementById('new-name').value = '';
+  document.getElementById('new-min').value  = '';
+  document.getElementById('new-pxc').value  = '';
+  document.getElementById('new-pezzi').value = '0';
+  showToast(`✅ "${name}" aggiunto!`);
+  switchTab('giacenze');
+}
+
+// ── GOOGLE SHEETS ────────────────────────────────────────────────────────────
+function connectSheet() {
+  const url = document.getElementById('sheets-url').value.trim();
+  if (!url.startsWith('https://script.google.com')) {
+    showToast('⚠️ URL non valido'); return;
+  }
+  sheetsUrl = url;
+  localStorage.setItem('gr_sheets_url', url);
+  document.getElementById('connect-status').textContent = '✅ Google Sheet connesso!';
+  showToast('✅ Connesso!');
+}
+
+async function saveToSheet() {
+  if (!sheetsUrl) { showToast('⚙️ Configura prima Google Sheets nel tab Setup'); return; }
+  const btn = document.getElementById('save-btn');
+  btn.classList.add('saving');
+  btn.textContent = '⏳ Salvataggio…';
+  try {
+    const rows = [['nome','categoria','minimo','pz_cartone','pezzi','fornitore']];
+    products.forEach(p => rows.push([p.name, p.cat, p.min, p.pxc, p.pz, p.forn]));
+    await fetch(sheetsUrl, {
+      method: 'POST',
+      body: JSON.stringify(rows),
+      headers: {'Content-Type': 'application/json'}
+    });
+    modified = false;
+    btn.classList.add('hidden');
+    showToast('✅ Salvato su Google Sheets!');
+  } catch(e) {
+    showToast('❌ Errore connessione — dati salvati in locale');
+  }
+  btn.classList.remove('saving');
+  btn.innerHTML = '💾 Salva aggiornamento';
+}
+
+async function loadFromSheet() {
+  if (!sheetsUrl) return;
+  try {
+    const res  = await fetch(sheetsUrl);
+    const rows = await res.json();
+    if (!Array.isArray(rows) || rows.length < 2) return;
+    const header = rows[0];
+    const ni = header.indexOf('nome'), ci = header.indexOf('categoria'),
+          mi = header.indexOf('minimo'), xi = header.indexOf('pz_cartone'),
+          pi = header.indexOf('pezzi'), fi = header.indexOf('fornitore');
+    if (ni < 0) return;
+    products = rows.slice(1).map(r => ({
+      name: r[ni], cat: r[ci], min: parseInt(r[mi])||0,
+      pxc: parseInt(r[xi])||1, pz: parseInt(r[pi])||0, forn: r[fi]||'Altro'
+    }));
+    localStorage.setItem('gr_products', JSON.stringify(products));
+    render();
+    showToast('✅ Dati caricati da Google Sheets');
+  } catch(e) { /* usa dati locali */ }
+}
+
+// ── UTILS ────────────────────────────────────────────────────────────────────
+function switchTab(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  const tabs = ['giacenze','ordine','aggiungi','setup'];
+  document.querySelectorAll('.tab')[tabs.indexOf(id)].classList.add('active');
+  if (id === 'giacenze') document.getElementById('save-btn').classList.toggle('hidden', !modified);
+  else document.getElementById('save-btn').classList.add('hidden');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+init();
+</script>
+</body>
+</html>
