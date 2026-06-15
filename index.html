@@ -628,8 +628,9 @@ async function saveToSheet() {
     products.forEach(p => rows.push([p.name, p.cat, p.min, p.pxc, p.pz, p.forn]));
     await fetch(sheetsUrl, {
       method: 'POST',
+      mode: 'no-cors',
       body: JSON.stringify(rows),
-      headers: {'Content-Type': 'application/json'}
+      headers: {'Content-Type': 'text/plain'}
     });
     modified = false;
     btn.classList.add('hidden');
