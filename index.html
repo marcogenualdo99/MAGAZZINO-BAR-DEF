@@ -6,6 +6,12 @@
 <title>Magazzino Bar · Garden River</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Magazzino Bar">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="logo.png">
+<link rel="icon" type="image/png" href="logo.png">
 <style>
 :root {
   --green-900: #0D2B1E;
@@ -45,15 +51,16 @@ body {
 }
 
 /* ── HEADER ── */
-header {
+.top-bar {
+  position: sticky; top: 0; z-index: 100;
   background: var(--white);
   border-bottom: 1px solid var(--gray-100);
-  padding: 14px 16px;
-  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
 }
+header { padding: 12px 16px 8px; }
 .header-inner {
   display: flex; align-items: center; justify-content: space-between;
-  max-width: 600px; margin: 0 auto;
+  max-width: 750px; margin: 0 auto;
 }
 .header-brand { display: flex; align-items: center; gap: 10px; }
 
@@ -69,30 +76,26 @@ header {
 .sync-btn:active { background: var(--green-100); }
 
 /* ── NAV TABS ── */
-nav {
-  background: var(--white);
-  border-bottom: 1px solid var(--gray-100);
-  overflow-x: auto; -webkit-overflow-scrolling: touch;
-  scrollbar-width: none; position: sticky; top: 65px; z-index: 99;
-}
+nav { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
 nav::-webkit-scrollbar { display: none; }
 .nav-inner {
-  display: flex; max-width: 600px; margin: 0 auto;
+  display: flex; max-width: 750px; margin: 0 auto;
   padding: 0 4px;
 }
 .tab {
-  flex: 1; min-width: 72px; padding: 11px 4px 10px;
-  text-align: center; font-size: 11px; font-weight: 600;
+  flex: 1; min-width: 68px; padding: 10px 4px 9px;
+  text-align: center; font-size: 12px; font-weight: 600;
   color: var(--gray-500); cursor: pointer;
   border-bottom: 2px solid transparent;
   transition: all .15s; white-space: nowrap;
-  letter-spacing: .01em;
+  letter-spacing: .01em; user-select: none;
 }
+.tab:active { background: var(--green-50); }
 .tab.active { color: var(--green-500); border-bottom-color: var(--green-500); }
 
 /* ── MAIN ── */
 main {
-  max-width: 600px; margin: 0 auto;
+  max-width: 750px; margin: 0 auto;
   padding: 16px 12px 100px;
 }
 
@@ -380,9 +383,12 @@ main {
 </head>
 <body>
 
+<div class="top-bar">
 <header>
   <div class="header-inner">
     <div class="header-brand">
+      <img src="logo.png" alt="Garden River Logo"
+        style="height:38px;width:38px;object-fit:contain;border-radius:8px;flex-shrink:0;">
       <div>
         <div class="header-title">Magazzino Bar</div>
         <div class="header-sub">Centro Vacanze Garden River</div>
@@ -401,6 +407,7 @@ main {
     <div class="tab" onclick="switchTab('setup')">⚙️ Setup</div>
   </div>
 </nav>
+</div>
 
 <main>
 
@@ -830,48 +837,81 @@ async function saveToSheet() {
 
 async function loadFromSheet(showMsg) {
   if (!sheetsUrl) return false;
+
+  // Metodo 1: fetch diretto (funziona da browser)
+  // Metodo 2: proxy allorigins (funziona da PWA iPhone)
+  // Metodo 3: JSONP (fallback)
+
+  const parseRows = (rows) => {
+    if (!Array.isArray(rows) || rows.length < 2) return null;
+    const header = rows[0];
+    const ni = header.indexOf('nome'), ci = header.indexOf('categoria'),
+          mi = header.indexOf('minimo'), xi = header.indexOf('pz_cartone'),
+          pi = header.indexOf('pezzi'), fi = header.indexOf('fornitore');
+    if (ni < 0) return null;
+    return rows.slice(1).map(r => ({
+      name: String(r[ni]||'').trim(), cat: String(r[ci]||''),
+      min: parseInt(r[mi])||0, pxc: parseInt(r[xi])||1,
+      pz: parseInt(r[pi])||0, forn: String(r[fi]||'Altro')
+    })).filter(p => p.name);
+  };
+
+  const applyData = (loaded) => {
+    if (loaded && loaded.length > 0) {
+      products = loaded;
+      localStorage.setItem('gr_products', JSON.stringify(products));
+      render();
+      if (showMsg) showToast('✅ Dati aggiornati da Google Sheets');
+      return true;
+    }
+    return false;
+  };
+
+  // Metodo 1: fetch diretto
+  try {
+    const res = await Promise.race([
+      fetch(sheetsUrl + '?t=' + Date.now()),
+      new Promise((_, rej) => setTimeout(() => rej('timeout'), 5000))
+    ]);
+    if (res.ok) {
+      const rows = await res.json();
+      if (applyData(parseRows(rows))) return true;
+    }
+  } catch(e) {}
+
+  // Metodo 2: proxy allorigins (per PWA iPhone)
+  try {
+    const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(sheetsUrl + '?t=' + Date.now());
+    const res = await Promise.race([
+      fetch(proxyUrl),
+      new Promise((_, rej) => setTimeout(() => rej('timeout'), 6000))
+    ]);
+    if (res.ok) {
+      const data = await res.json();
+      const rows = JSON.parse(data.contents);
+      if (applyData(parseRows(rows))) return true;
+    }
+  } catch(e) {}
+
+  // Metodo 3: JSONP (fallback finale)
   return new Promise((resolve) => {
-    // Rimuovi script JSONP precedente se esiste
     const old = document.getElementById('jsonp-script');
     if (old) old.remove();
-
     const cbName = 'jsonpCb_' + Date.now();
     window[cbName] = function(rows) {
       delete window[cbName];
-      if (!Array.isArray(rows) || rows.length < 2) { resolve(false); return; }
-      const header = rows[0];
-      const ni = header.indexOf('nome'), ci = header.indexOf('categoria'),
-            mi = header.indexOf('minimo'), xi = header.indexOf('pz_cartone'),
-            pi = header.indexOf('pezzi'), fi = header.indexOf('fornitore');
-      if (ni < 0) { resolve(false); return; }
-      const loaded = rows.slice(1).map(r => ({
-        name: String(r[ni]||'').trim(), cat: String(r[ci]||''),
-        min: parseInt(r[mi])||0, pxc: parseInt(r[xi])||1,
-        pz: parseInt(r[pi])||0, forn: String(r[fi]||'Altro')
-      })).filter(p => p.name);
-      if (loaded.length > 0) {
-        products = loaded;
-        localStorage.setItem('gr_products', JSON.stringify(products));
-        render();
-        if (showMsg) showToast('✅ Dati aggiornati da Google Sheets');
-      }
-      resolve(true);
+      resolve(applyData(parseRows(rows)));
     };
-
     const s = document.createElement('script');
     s.id = 'jsonp-script';
-    // Aggiungi timestamp per evitare cache
     s.src = sheetsUrl + '?callback=' + cbName + '&t=' + Date.now();
     s.onerror = () => {
       delete window[cbName];
-      if (showMsg) showToast('⚠️ Lettura non disponibile — uso dati locali');
+      if (showMsg) showToast('⚠️ Impossibile sincronizzare — uso dati locali');
       resolve(false);
     };
     document.head.appendChild(s);
-    setTimeout(() => {
-      delete window[cbName];
-      resolve(false);
-    }, 8000);
+    setTimeout(() => { delete window[cbName]; resolve(false); }, 8000);
   });
 }
 
@@ -892,20 +932,12 @@ function sendWhatsApp(fornId) {
   if (!forn) return;
   const prods = byForn[forn];
   const oggi = new Date().toLocaleDateString('it-IT');
-  let msg = `🍺 *ORDINE MAGAZZINO BAR*\n`;
-  msg += `📍 Centro Vacanze Garden River\n`;
-  msg += `📅 ${oggi}\n\n`;
-  msg += `Gentili ${forn},\nsi prega di consegnare il seguente ordine:\n\n`;
+  let msg = `Ordine del ${oggi}:\n\n`;
   prods.forEach(p => {
     const cart = cartoniFabbisogno(p);
-    const stato_p = stato(p);
-    if (stato_p === 'red') {
-      msg += `🔴 *${p.name}* — ESAURITO (${Math.ceil(p.min/p.pxc)} cartoni)\n`;
-    } else {
-      msg += `🟠 *${p.name}* — ${cart} carton${cart===1?'e':'i'} (${p.pz} pz rimasti)\n`;
-    }
+    const n = stato(p) === 'red' ? Math.ceil(p.min/p.pxc) : cart;
+    msg += `- ${p.name}: ${n} carton${n===1?'e':'i'}\n`;
   });
-  msg += `\nGrazie,\nBar Garden River`;
   // Apri WhatsApp con il testo precompilato
   const encoded = encodeURIComponent(msg);
   window.open(`https://wa.me/?text=${encoded}`, '_blank');
