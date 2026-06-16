@@ -10,7 +10,7 @@
   {
     "name": "Acqua pet 0.5L Naturale",
     "cat": "💧 ACQUE",
-    "min": 48,
+    "min": 72,
     "pxc": 24,
     "pz": 4,
     "forn": "Cupra Bibite"
@@ -18,7 +18,7 @@
   {
     "name": "Acqua pet 1L Frizzante",
     "cat": "💧 ACQUE",
-    "min": 280,
+    "min": 24,
     "pxc": 12,
     "pz": 18,
     "forn": "Cupra Bibite"
@@ -26,7 +26,7 @@
   {
     "name": "Acqua pet 0.5L Frizzante",
     "cat": "💧 ACQUE",
-    "min": 48,
+    "min": 72,
     "pxc": 24,
     "pz": 4,
     "forn": "Cupra Bibite"
@@ -58,7 +58,7 @@
   {
     "name": "Coca Cola litro vetro",
     "cat": "🥤 BIBITE",
-    "min": 12,
+    "min": 24,
     "pxc": 12,
     "pz": 1,
     "forn": "Cupra Bibite"
