@@ -152,8 +152,8 @@ main {
   padding: 11px 14px; cursor: pointer; user-select: none;
 }
 .cat-header-left { display: flex; align-items: center; gap: 8px; }
-.cat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.cat-name { font-size: 13px; font-weight: 600; color: var(--gray-700); }
+.cat-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.cat-name { font-size: 13px; font-weight: 700; color: var(--gray-900); }
 .cat-badge {
   font-size: 11px; font-weight: 600; padding: 2px 8px;
   border-radius: 20px; background: var(--amber-bg);
@@ -304,17 +304,26 @@ main {
 
 /* ── IMPOSTAZIONI ── */
 .imp-cat-title {
-  font-size: 11px; font-weight: 700; color: var(--gray-500);
+  font-size: 11px; font-weight: 700;
   text-transform: uppercase; letter-spacing: .06em;
-  padding: 10px 0 5px; margin-top: 4px;
+  padding: 12px 0 6px; margin-top: 6px;
 }
-.imp-row {
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 0; border-bottom: 1px solid var(--gray-100);
+.imp-row-expanded {
+  padding: 10px 0; border-bottom: 1px solid var(--gray-100);
 }
-.imp-row:last-child { border-bottom: none; }
-.imp-name { flex: 1; font-size: 13px; font-weight: 500; color: var(--gray-700); min-width: 0; }
-.imp-field { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.imp-row-expanded:last-child { border-bottom: none; }
+.imp-row-top {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+}
+.imp-name-input {
+  flex: 1; height: 34px; padding: 0 10px;
+  border: 1px solid var(--gray-300); border-radius: var(--radius-sm);
+  font-size: 13px; font-weight: 500; color: var(--gray-900);
+  font-family: var(--font); outline: none;
+}
+.imp-name-input:focus { border-color: var(--green-400); }
+.imp-row-bottom { display: flex; gap: 8px; align-items: flex-end; }
+.imp-field { display: flex; flex-direction: column; gap: 3px; }
 .imp-field label { font-size: 10px; color: var(--gray-500); font-weight: 500; }
 .imp-field input {
   width: 60px; height: 34px; text-align: center;
@@ -323,8 +332,16 @@ main {
   color: var(--gray-900); outline: none; font-family: var(--font);
 }
 .imp-field input:focus { border-color: var(--green-400); }
+.imp-select {
+  height: 34px; padding: 0 6px;
+  border: 1px solid var(--green-200); border-radius: var(--radius-sm);
+  background: var(--green-50); font-size: 11px; font-weight: 500;
+  color: var(--gray-900); outline: none; font-family: var(--font);
+  max-width: 140px;
+}
+.imp-select:focus { border-color: var(--green-400); }
 .del-btn-sm {
-  width: 28px; height: 28px; border-radius: var(--radius-sm);
+  width: 34px; height: 34px; border-radius: var(--radius-sm);
   border: 1px solid var(--red-bd); background: var(--red-bg);
   color: var(--red); font-size: 13px; cursor: pointer;
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
@@ -394,7 +411,10 @@ main {
         <div class="header-sub">Centro Vacanze Garden River</div>
       </div>
     </div>
-    <button class="sync-btn" onclick="forceSync()" id="sync-btn">🔄 Sync</button>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="sync-btn" onclick="forceSync()" id="sync-btn">🔄 Sync</button>
+      <button class="sync-btn" onclick="switchTab('setup')" style="padding:7px 10px;font-size:16px" title="Impostazioni">⚙️</button>
+    </div>
   </div>
 </header>
 
@@ -404,7 +424,7 @@ main {
     <div class="tab" onclick="switchTab('ordine')">📋 Ordine</div>
     <div class="tab" onclick="switchTab('aggiungi')">➕ Prodotto</div>
     <div class="tab" onclick="switchTab('impostazioni')">🔧 Minimi</div>
-    <div class="tab" onclick="switchTab('setup')">⚙️ Setup</div>
+    <div class="tab" onclick="switchTab('categorie')">🗂 Categorie</div>
   </div>
 </nav>
 </div>
@@ -450,13 +470,29 @@ main {
       </div>
       <div class="form-group">
         <label>Categoria</label>
-        <select id="new-cat">
+        <select id="new-cat" style="width:100%;height:42px;padding:0 12px;border:1px solid var(--gray-300);border-radius:var(--radius-sm);font-size:14px;font-family:var(--font);outline:none;background:var(--white)">
           <option value="💧 ACQUE">💧 Acque</option>
           <option value="🥤 BIBITE">🥤 Bibite</option>
           <option value="🍺 BIRRE">🍺 Birre</option>
           <option value="🍹 ALCOLICI & APERITIVI">🍹 Alcolici & Aperitivi</option>
           <option value="🧃 SUCCHI AMITA">🧃 Succhi Amita</option>
+          <option value="__new__">+ Nuova categoria…</option>
         </select>
+        <div id="new-cat-wrap" style="display:none;margin-top:8px;display:none;gap:8px">
+          <input type="text" id="new-cat-input"
+            placeholder="Nome nuova categoria…"
+            style="flex:1;height:42px;padding:0 12px;border:1.5px solid var(--green-400);border-radius:var(--radius-sm);font-size:14px;font-family:var(--font);outline:none;width:100%">
+          <div style="display:flex;gap:6px;margin-top:6px">
+            <button type="button" onclick="confirmNewCatForm()"
+              style="flex:1;height:36px;background:var(--green-500);color:white;border:none;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font)">
+              ✓ Aggiungi
+            </button>
+            <button type="button" onclick="cancelNewCatForm()"
+              style="height:36px;padding:0 14px;background:var(--white);border:1px solid var(--gray-300);border-radius:var(--radius-sm);font-size:13px;cursor:pointer;font-family:var(--font)">
+              Annulla
+            </button>
+          </div>
+        </div>
       </div>
       <div class="form-row">
         <div class="form-group">
@@ -486,7 +522,26 @@ main {
       <h3>Quantità minime</h3>
       <p class="subtitle">Modifica soglie e pezzi per cartone, poi salva</p>
       <div id="impostazioni-list"></div>
-      <button class="btn-primary" style="margin-top:16px" onclick="saveImpostazioni()">Salva impostazioni</button>
+
+    </div>
+  </div>
+
+  <!-- CATEGORIE -->
+  <div id="sec-categorie" class="section">
+    <div class="card">
+      <h3>🗂 Gestione categorie</h3>
+      <p class="subtitle">Aggiungi o elimina categorie personalizzate</p>
+
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <input type="text" id="cat-new-input" placeholder="Nome nuova categoria…"
+          style="flex:1;height:42px;padding:0 12px;border:1px solid var(--gray-300);border-radius:var(--radius-sm);font-size:14px;font-family:var(--font);outline:none">
+        <button onclick="addCatFromManager()"
+          style="height:42px;padding:0 16px;background:var(--green-700);color:white;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font)">
+          + Aggiungi
+        </button>
+      </div>
+
+      <div id="cat-list"></div>
     </div>
   </div>
 
@@ -541,6 +596,41 @@ const CAT_COLORS = {
   "🍹 ALCOLICI & APERITIVI": {"h":"6A1B9A","e":"F3E5F5","o":"E1BEE7"},
   "🧃 SUCCHI AMITA":         {"h":"2E7D32","e":"E8F5E9","o":"C8E6C9"},
 };
+
+// Colori extra per categorie personalizzate
+const EXTRA_COLORS = [
+  {"h":"00838F","e":"E0F7FA","o":"B2EBF2"},
+  {"h":"EF6C00","e":"FFF3E0","o":"FFE0B2"},
+  {"h":"AD1457","e":"FCE4EC","o":"F8BBD0"},
+  {"h":"37474F","e":"ECEFF1","o":"CFD8DC"},
+  {"h":"558B2F","e":"F1F8E9","o":"DCEDC8"},
+];
+
+function getCatColor(cat) {
+  if (CAT_COLORS[cat]) return CAT_COLORS[cat];
+  // Assegna colore extra in base all'indice della categoria personalizzata
+  const customCats = getAllCategories().filter(c => !CAT_COLORS[c]);
+  const idx = customCats.indexOf(cat) % EXTRA_COLORS.length;
+  return EXTRA_COLORS[Math.max(0, idx)];
+}
+
+function getAllCategories() {
+  const defaults = ["💧 ACQUE","🥤 BIBITE","🍺 BIRRE","🍹 ALCOLICI & APERITIVI","🧃 SUCCHI AMITA"];
+  const custom = JSON.parse(localStorage.getItem('gr_custom_cats') || '[]');
+  // Includi anche categorie già usate dai prodotti (es. caricate da GitHub)
+  const fromProducts = products.map(p => p.cat).filter(Boolean);
+  const all = [...new Set([...defaults, ...custom, ...fromProducts])];
+  return all;
+}
+
+function addCustomCategory(name) {
+  if (!name.trim()) return;
+  const custom = JSON.parse(localStorage.getItem('gr_custom_cats') || '[]');
+  if (!custom.includes(name) && !Object.keys(CAT_COLORS).includes(name)) {
+    custom.push(name);
+    localStorage.setItem('gr_custom_cats', JSON.stringify(custom));
+  }
+}
 
 // ── STATO LOCALE ─────────────────────────────────────────────────────────────
 let products = [];
@@ -660,20 +750,20 @@ function renderGiacenze() {
     bycat[p.cat].push({...p, idx});
   });
 
-  const order = ["💧 ACQUE","🥤 BIBITE","🍺 BIRRE","🍹 ALCOLICI & APERITIVI","🧃 SUCCHI AMITA"];
+  const order = getAllCategories();
   let html = '';
   order.forEach(cat => {
     if (!bycat[cat] || bycat[cat].length === 0) return;
-    const cc = CAT_COLORS[cat] || {h:'888888',e:'F5F5F5',o:'EEEEEE'};
+    const cc = getCatColor(cat);
     const critico = bycat[cat].filter(p => stato(p) !== 'green').length;
     html += `<div class="cat-block">
-      <div class="cat-header" onclick="toggleCat(this)">
+      <div class="cat-header" onclick="toggleCat(this)" style="background:#${cc.h}18">
         <div class="cat-header-left">
           <div class="cat-dot" style="background:#${cc.h}"></div>
-          <span class="cat-name">${cat.replace(/^\S+\s/,'')}</span>
+          <span class="cat-name" style="color:#${cc.h}">${cat.replace(/^\S+\s/,'')}</span>
         </div>
         ${critico > 0
-          ? `<span class="cat-badge">⚠️ ${critico} critici</span>`
+          ? `<span class="cat-badge" style="background:#${cc.h}22;color:#${cc.h};border-color:#${cc.h}44">⚠️ ${critico} critici</span>`
           : `<span class="cat-badge ok">✓ ok</span>`}
       </div>
       <div class="product-list">`;
@@ -871,6 +961,7 @@ async function loadFromGitHub(showMsg) {
     if (Array.isArray(loaded) && loaded.length > 0) {
       products = loaded;
       localStorage.setItem('gr_products', JSON.stringify(products));
+      populateCatSelect('new-cat');
       render();
       if (showMsg) showToast('✅ Dati aggiornati da GitHub!');
       return true;
@@ -915,30 +1006,40 @@ function sendWhatsApp(fornId) {
 
 // ── UTILS ────────────────────────────────────────────────────────────────────
 function renderImpostazioni() {
-  const order = ["💧 ACQUE","🥤 BIBITE","🍺 BIRRE","🍹 ALCOLICI & APERITIVI","🧃 SUCCHI AMITA"];
+  const order = getAllCategories();
   const bycat = {};
   products.forEach((p, idx) => {
     if (!bycat[p.cat]) bycat[p.cat] = [];
     bycat[p.cat].push({...p, idx});
   });
-  const cc = CAT_COLORS;
   let html = '';
   order.forEach(cat => {
     if (!bycat[cat]) return;
-    const c = cc[cat] || {h:'888888'};
-    html += `<div class="imp-cat-title" style="background:#${c.h}">${cat}</div>`;
+    const c = getCatColor(cat);
+    html += `<div class="imp-cat-title" style="color:#${c.h};border-bottom:2px solid #${c.h}">${cat}</div>`;
     bycat[cat].forEach(p => {
-      html += `<div class="imp-row">
-        <span class="imp-name">${p.name}</span>
-        <div class="imp-field">
-          <label>Min pz</label>
-          <input type="number" min="0" value="${p.min}" data-idx="${p.idx}" data-field="min">
+      html += `<div class="imp-row imp-row-expanded">
+        <div class="imp-row-top">
+          <input class="imp-name-input" type="text" value="${p.name}" data-idx="${p.idx}" data-field="name" placeholder="Nome prodotto">
+          <button class="del-btn-sm" onclick="deleteProduct(${p.idx})" title="Elimina">🗑</button>
         </div>
-        <div class="imp-field">
-          <label>Pz/cartone</label>
-          <input type="number" min="1" value="${p.pxc}" data-idx="${p.idx}" data-field="pxc">
+        <div class="imp-row-bottom">
+          <div class="imp-field">
+            <label>Categoria</label>
+            <select data-idx="${p.idx}" data-field="cat" class="imp-select" onchange="saveImpostazioni()">
+              ${getAllCategories().map(o => `<option value="${o}" ${o===p.cat?'selected':''}>${o}</option>`).join('')}
+              <option value="__new__">+ Nuova categoria…</option>
+            </select>
+          </div>
+          <div class="imp-field">
+            <label>Min pz</label>
+            <input type="number" min="0" value="${p.min}" data-idx="${p.idx}" data-field="min" onchange="saveImpostazioni()">
+          </div>
+          <div class="imp-field">
+            <label>Pz/cart</label>
+            <input type="number" min="1" value="${p.pxc}" data-idx="${p.idx}" data-field="pxc" onchange="saveImpostazioni()">
+          </div>
         </div>
-        <button class="del-btn-sm" onclick="deleteProduct(${p.idx})" title="Elimina">🗑</button>
       </div>`;
     });
   });
@@ -946,27 +1047,155 @@ function renderImpostazioni() {
 }
 
 function saveImpostazioni() {
-  const inputs = document.querySelectorAll('#impostazioni-list input');
-  inputs.forEach(inp => {
-    const idx   = parseInt(inp.dataset.idx);
-    const field = inp.dataset.field;
-    const val   = Math.max(field === 'pxc' ? 1 : 0, parseInt(inp.value) || 0);
-    products[idx][field] = val;
+  document.querySelectorAll('#impostazioni-list input, #impostazioni-list select').forEach(el => {
+    const idx   = parseInt(el.dataset.idx);
+    const field = el.dataset.field;
+    if (!field || isNaN(idx)) return;
+    if (field === 'name') {
+      products[idx][field] = el.value.trim() || products[idx][field];
+    } else if (field === 'cat') {
+      products[idx][field] = el.value;
+    } else {
+      products[idx][field] = Math.max(field === 'pxc' ? 1 : 0, parseInt(el.value) || 0);
+    }
   });
-  markModified();
+  // Salva in locale e mostra FAB senza doppio prompt
+  modified = true;
+  localStorage.setItem('gr_products', JSON.stringify(products));
+  document.getElementById('save-btn').classList.remove('hidden');
   render();
-  showToast('✅ Impostazioni salvate!');
+  showToast('✅ Modifiche pronte — premi Salva per sincronizzare');
 }
 
 function switchTab(id) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.getElementById('sec-'+id).classList.add('active');
-  const tabs = ['giacenze','ordine','aggiungi','impostazioni','setup'];
-  document.querySelectorAll('.tab')[tabs.indexOf(id)].classList.add('active');
-  if (id === 'giacenze') document.getElementById('save-btn').classList.toggle('hidden', !modified);
-  else document.getElementById('save-btn').classList.add('hidden');
+  const tabs = ['giacenze','ordine','aggiungi','impostazioni','categorie'];
+  const tabIdx = tabs.indexOf(id);
+  if (tabIdx >= 0) document.querySelectorAll('.tab')[tabIdx].classList.add('active');
+  if (id === 'giacenze' || id === 'impostazioni') {
+    document.getElementById('save-btn').classList.toggle('hidden', !modified);
+  } else {
+    document.getElementById('save-btn').classList.add('hidden');
+  }
   if (id === 'impostazioni') renderImpostazioni();
+  if (id === 'categorie') renderCatManager();
+}
+
+function populateCatSelect(selectId) {
+  // Non usato più — i select sono statici con opzione __new__
+}
+
+function confirmNewCatForm() {
+  const inp = document.getElementById('new-cat-input');
+  const name = inp.value.trim();
+  if (!name) { showToast('⚠️ Inserisci un nome'); return; }
+  addCustomCategory(name);
+  // Aggiungi opzione al select prima di __new__
+  const sel = document.getElementById('new-cat');
+  const newOpt = document.createElement('option');
+  newOpt.value = name; newOpt.textContent = name;
+  sel.insertBefore(newOpt, sel.querySelector('option[value="__new__"]'));
+  sel.value = name;
+  inp.value = '';
+  document.getElementById('new-cat-wrap').style.display = 'none';
+  showToast(`✅ Categoria "${name}" aggiunta!`);
+}
+
+function cancelNewCatForm() {
+  document.getElementById('new-cat-input').value = '';
+  document.getElementById('new-cat-wrap').style.display = 'none';
+  const sel = document.getElementById('new-cat');
+  sel.value = sel.options[0].value;
+}
+
+// Intercetta selezione __new__ nel form aggiungi
+document.addEventListener('change', e => {
+  if (e.target.id === 'new-cat' && e.target.value === '__new__') {
+    e.target.value = e.target.options[0].value;
+    const wrap = document.getElementById('new-cat-wrap');
+    wrap.style.display = 'flex';
+    wrap.style.flexDirection = 'column';
+    document.getElementById('new-cat-input').focus();
+  }
+});
+
+function renderCatManager() {
+  const defaults = ["💧 ACQUE","🥤 BIBITE","🍺 BIRRE","🍹 ALCOLICI & APERITIVI","🧃 SUCCHI AMITA"];
+  const custom = JSON.parse(localStorage.getItem('gr_custom_cats') || '[]');
+  const all = getAllCategories();
+  let html = '';
+
+  if (defaults.length) {
+    html += `<p style="font-size:11px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Categorie di default</p>`;
+    defaults.forEach(cat => {
+      const c = getCatColor(cat);
+      html += `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--gray-100)">
+        <div style="width:10px;height:10px;border-radius:50%;background:#${c.h};flex-shrink:0"></div>
+        <span style="flex:1;font-size:13px;font-weight:500">${cat}</span>
+        <span style="font-size:11px;color:var(--gray-500)">${products.filter(p=>p.cat===cat).length} prodotti</span>
+      </div>`;
+    });
+  }
+
+  if (custom.length) {
+    html += `<p style="font-size:11px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.06em;margin:14px 0 8px">Categorie personalizzate</p>`;
+    custom.forEach(cat => {
+      const c = getCatColor(cat);
+      const count = products.filter(p=>p.cat===cat).length;
+      html += `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--gray-100)">
+        <div style="width:10px;height:10px;border-radius:50%;background:#${c.h};flex-shrink:0"></div>
+        <span style="flex:1;font-size:13px;font-weight:500">${cat}</span>
+        <span style="font-size:11px;color:var(--gray-500);margin-right:4px">${count} prodotti</span>
+        <button onclick="deleteCat('${cat}')"
+          style="width:28px;height:28px;border:1px solid var(--red-bd);background:var(--red-bg);color:var(--red);border-radius:var(--radius-sm);font-size:13px;cursor:pointer">🗑</button>
+      </div>`;
+    });
+  } else {
+    html += `<p style="font-size:13px;color:var(--gray-500);margin-top:12px;text-align:center;padding:20px 0">Nessuna categoria personalizzata — aggiungine una!</p>`;
+  }
+
+  document.getElementById('cat-list').innerHTML = html;
+}
+
+function addCatFromManager() {
+  const inp = document.getElementById('cat-new-input');
+  const name = inp.value.trim();
+  if (!name) { showToast('⚠️ Inserisci un nome'); return; }
+  const defaults = ["💧 ACQUE","🥤 BIBITE","🍺 BIRRE","🍹 ALCOLICI & APERITIVI","🧃 SUCCHI AMITA"];
+  if (defaults.includes(name)) { showToast('⚠️ Categoria già esistente'); return; }
+  addCustomCategory(name);
+  // Aggiungi anche al select nel form aggiungi
+  const sel = document.getElementById('new-cat');
+  if (sel && !Array.from(sel.options).find(o => o.value === name)) {
+    const newOpt = document.createElement('option');
+    newOpt.value = name; newOpt.textContent = name;
+    sel.insertBefore(newOpt, sel.querySelector('option[value="__new__"]'));
+  }
+  inp.value = '';
+  renderCatManager();
+  showToast(`✅ Categoria "${name}" aggiunta!`);
+}
+
+function deleteCat(cat) {
+  const count = products.filter(p => p.cat === cat).length;
+  const msg = count > 0
+    ? `Eliminare la categoria "${cat}"? I ${count} prodotti associati verranno spostati in "🥤 BIBITE".`
+    : `Eliminare la categoria "${cat}"?`;
+  if (!confirm(msg)) return;
+  // Sposta prodotti in Bibite se necessario
+  if (count > 0) products.forEach(p => { if (p.cat === cat) p.cat = '🥤 BIBITE'; });
+  // Rimuovi dalla lista custom
+  const custom = JSON.parse(localStorage.getItem('gr_custom_cats') || '[]');
+  localStorage.setItem('gr_custom_cats', JSON.stringify(custom.filter(c => c !== cat)));
+  // Rimuovi dal select
+  const sel = document.getElementById('new-cat');
+  if (sel) Array.from(sel.options).forEach(o => { if (o.value === cat) o.remove(); });
+  markModified();
+  render();
+  renderCatManager();
+  showToast(`🗑 Categoria eliminata`);
 }
 
 function showToast(msg) {
