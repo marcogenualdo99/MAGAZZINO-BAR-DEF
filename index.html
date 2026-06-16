@@ -493,34 +493,32 @@ main {
   <!-- SETUP -->
   <div id="sec-setup" class="section">
     <div class="card">
-      <h3>Collegamento Google Sheets</h3>
-      <p class="subtitle">Sincronizza i dati tra tutti i dispositivi</p>
+      <h3>Collegamento GitHub</h3>
+      <p class="subtitle">I dati vengono salvati direttamente su GitHub — nessun servizio esterno</p>
+
       <div class="setup-step">
         <div class="step-num">1</div>
-        <div class="step-text">Apri <strong>Google Sheets</strong>, crea un nuovo foglio e rinomina il primo tab <strong>"Magazzino"</strong>.</div>
+        <div class="step-text">Vai su <strong>github.com → foto profilo → Settings → Developer settings → Personal access tokens → Tokens (classic)</strong></div>
       </div>
       <div class="setup-step">
         <div class="step-num">2</div>
-        <div class="step-text">Vai su <strong>Estensioni → Apps Script</strong>, incolla lo script qui sotto e salva.</div>
+        <div class="step-text">Clicca <strong>Generate new token (classic)</strong>, dai un nome, spunta solo <strong>repo</strong> e genera.</div>
       </div>
-      <div class="setup-code">function doGet(e){var cb=e.parameter.callback;var json=JSON.stringify(getData());if(cb){return ContentService.createTextOutput(cb+"("+json+")").setMimeType(ContentService.MimeType.JAVASCRIPT);}return ContentService.createTextOutput(json).setMimeType(ContentService.MimeType.JSON);}
-function doPost(e){var data=JSON.parse(e.postData.contents);saveData(data);return ContentService.createTextOutput("OK").setMimeType(ContentService.MimeType.TEXT);}
-function getData(){var ss=SpreadsheetApp.getActiveSpreadsheet();var sh=ss.getSheetByName("Magazzino")||ss.getActiveSheet();var last=sh.getLastRow();if(last&lt;1)return[];return sh.getRange(1,1,last,6).getValues();}
-function saveData(rows){var ss=SpreadsheetApp.getActiveSpreadsheet();var sh=ss.getSheetByName("Magazzino")||ss.getActiveSheet();sh.clearContents();if(rows.length>0){sh.getRange(1,1,rows.length,rows[0].length).setValues(rows);}}</div>
       <div class="setup-step">
         <div class="step-num">3</div>
-        <div class="step-text">Clicca <strong>Distribuisci → Nuova distribuzione → App web</strong>. Accesso: <strong>Chiunque</strong>. Copia l'URL.</div>
+        <div class="step-text">Incolla il token qui sotto — viene salvato solo sul tuo dispositivo, mai condiviso.</div>
       </div>
-      <div class="setup-step">
-        <div class="step-num">4</div>
-        <div class="step-text">Incolla l'URL qui sotto e connetti.</div>
+
+      <div class="form-group">
+        <label>GitHub Token</label>
+        <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
       </div>
-      <input type="url" class="input-url" id="sheets-url" placeholder="https://script.google.com/macros/s/...">
-      <button class="btn-primary" onclick="connectSheet()">Connetti Google Sheet</button>
-      <p id="connect-status" style="margin-top:10px;font-size:13px;color:var(--green-ok);font-weight:500;"></p>
+      <p id="connect-status" style="margin-top:4px;margin-bottom:10px;font-size:13px;color:var(--green-ok);font-weight:500;"></p>
+      <button class="btn-primary" onclick="connectGitHub()">Connetti GitHub</button>
+
       <div class="divider"></div>
       <p style="font-size:12px;color:var(--gray-500);line-height:1.6">
-        I dati vengono salvati localmente anche senza connessione. Premi <strong>🔄 Sync</strong> per aggiornare da Google Sheets.
+        I dati vengono salvati localmente anche senza connessione. Premi <strong>🔄 Sync</strong> per sincronizzare con GitHub.
       </p>
     </div>
   </div>
@@ -546,7 +544,10 @@ const CAT_COLORS = {
 
 // ── STATO LOCALE ─────────────────────────────────────────────────────────────
 let products = [];
-let sheetsUrl = localStorage.getItem('gr_sheets_url') || '';
+const GH_OWNER = 'marcogenualdo99';
+const GH_REPO  = 'MAGAZZINO-BAR-DEF';
+const GH_FILE  = 'data.json';
+let ghToken = localStorage.getItem('gr_gh_token') || '';
 let modified = false;
 
 // ── DATI DEFAULT ─────────────────────────────────────────────────────────────
@@ -612,10 +613,10 @@ const DEFAULT_PRODUCTS = [
 function init() {
   const saved = localStorage.getItem('gr_products');
   products = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
-  if (sheetsUrl) {
-    document.getElementById('sheets-url').value = sheetsUrl;
-    document.getElementById('connect-status').textContent = '✅ Google Sheet connesso';
-    loadFromSheet();
+  if (ghToken) {
+    document.getElementById('gh-token').value = ghToken;
+    document.getElementById('connect-status').textContent = '✅ GitHub connesso';
+    loadFromGitHub();
   }
   render();
 }
@@ -800,34 +801,49 @@ function addProduct() {
 }
 
 // ── GOOGLE SHEETS ────────────────────────────────────────────────────────────
-function connectSheet() {
-  const url = document.getElementById('sheets-url').value.trim();
-  if (!url.startsWith('https://script.google.com')) {
-    showToast('⚠️ URL non valido'); return;
+function connectGitHub() {
+  const token = document.getElementById('gh-token').value.trim();
+  if (!token.startsWith('ghp_') && !token.startsWith('github_pat_')) {
+    showToast('⚠️ Token non valido'); return;
   }
-  sheetsUrl = url;
-  localStorage.setItem('gr_sheets_url', url);
-  document.getElementById('connect-status').textContent = '✅ Google Sheet connesso!';
+  ghToken = token;
+  localStorage.setItem('gr_gh_token', token);
+  document.getElementById('connect-status').textContent = '✅ GitHub connesso!';
   showToast('✅ Connesso!');
+  loadFromGitHub();
 }
 
 async function saveToSheet() {
-  if (!sheetsUrl) { showToast('⚙️ Configura prima Google Sheets nel tab Setup'); return; }
+  if (!ghToken) { showToast('⚙️ Configura prima GitHub nel tab Setup'); return; }
   const btn = document.getElementById('save-btn');
   btn.classList.add('saving');
   btn.textContent = '⏳ Salvataggio…';
   try {
-    const rows = [['nome','categoria','minimo','pz_cartone','pezzi','fornitore']];
-    products.forEach(p => rows.push([p.name, p.cat, p.min, p.pxc, p.pz, p.forn]));
-    fetch(sheetsUrl, {
-      method: 'POST',
-      mode: 'no-cors',
-      body: JSON.stringify(rows),
-      headers: {'Content-Type': 'text/plain'}
+    // Ottieni SHA attuale del file (necessario per aggiornarlo)
+    const apiUrl = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}`;
+    let sha = null;
+    try {
+      const res = await fetch(apiUrl, {
+        headers: { 'Authorization': `token ${ghToken}`, 'Accept': 'application/vnd.github.v3+json' }
+      });
+      if (res.ok) { const data = await res.json(); sha = data.sha; }
+    } catch(e) {}
+
+    // Salva il file
+    const body = { message: 'Aggiornamento magazzino', content: btoa(unescape(encodeURIComponent(JSON.stringify(products, null, 2)))) };
+    if (sha) body.sha = sha;
+    const res = await fetch(apiUrl, {
+      method: 'PUT',
+      headers: { 'Authorization': `token ${ghToken}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
     });
-    modified = false;
-    btn.classList.add('hidden');
-    showToast('✅ Inviato a Google Sheets!');
+    if (res.ok) {
+      modified = false;
+      btn.classList.add('hidden');
+      showToast('✅ Salvato su GitHub!');
+    } else {
+      showToast('❌ Errore salvataggio — riprova');
+    }
   } catch(e) {
     showToast('❌ Errore connessione — dati salvati in locale');
   }
@@ -835,91 +851,41 @@ async function saveToSheet() {
   btn.innerHTML = '💾 Salva aggiornamento';
 }
 
-async function loadFromSheet(showMsg) {
-  if (!sheetsUrl) return false;
-
-  // Metodo 1: fetch diretto (funziona da browser)
-  // Metodo 2: proxy allorigins (funziona da PWA iPhone)
-  // Metodo 3: JSONP (fallback)
-
-  const parseRows = (rows) => {
-    if (!Array.isArray(rows) || rows.length < 2) return null;
-    const header = rows[0];
-    const ni = header.indexOf('nome'), ci = header.indexOf('categoria'),
-          mi = header.indexOf('minimo'), xi = header.indexOf('pz_cartone'),
-          pi = header.indexOf('pezzi'), fi = header.indexOf('fornitore');
-    if (ni < 0) return null;
-    return rows.slice(1).map(r => ({
-      name: String(r[ni]||'').trim(), cat: String(r[ci]||''),
-      min: parseInt(r[mi])||0, pxc: parseInt(r[xi])||1,
-      pz: parseInt(r[pi])||0, forn: String(r[fi]||'Altro')
-    })).filter(p => p.name);
-  };
-
-  const applyData = (loaded) => {
-    if (loaded && loaded.length > 0) {
+async function loadFromGitHub(showMsg) {
+  if (!ghToken) return false;
+  try {
+    const apiUrl = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}`;
+    const res = await Promise.race([
+      fetch(apiUrl, {
+        headers: { 'Authorization': `token ${ghToken}`, 'Accept': 'application/vnd.github.v3+json' }
+      }),
+      new Promise((_, rej) => setTimeout(() => rej('timeout'), 8000))
+    ]);
+    if (!res.ok) return false;
+    const data = await res.json();
+    const loaded = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
+    if (Array.isArray(loaded) && loaded.length > 0) {
       products = loaded;
       localStorage.setItem('gr_products', JSON.stringify(products));
       render();
-      if (showMsg) showToast('✅ Dati aggiornati da Google Sheets');
+      if (showMsg) showToast('✅ Dati aggiornati da GitHub!');
       return true;
     }
-    return false;
-  };
+  } catch(e) {
+    if (showMsg) showToast('⚠️ Impossibile sincronizzare — uso dati locali');
+  }
+  return false;
+}
 
-  // Metodo 1: fetch diretto
-  try {
-    const res = await Promise.race([
-      fetch(sheetsUrl + '?t=' + Date.now()),
-      new Promise((_, rej) => setTimeout(() => rej('timeout'), 5000))
-    ]);
-    if (res.ok) {
-      const rows = await res.json();
-      if (applyData(parseRows(rows))) return true;
-    }
-  } catch(e) {}
-
-  // Metodo 2: proxy allorigins (per PWA iPhone)
-  try {
-    const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(sheetsUrl + '?t=' + Date.now());
-    const res = await Promise.race([
-      fetch(proxyUrl),
-      new Promise((_, rej) => setTimeout(() => rej('timeout'), 6000))
-    ]);
-    if (res.ok) {
-      const data = await res.json();
-      const rows = JSON.parse(data.contents);
-      if (applyData(parseRows(rows))) return true;
-    }
-  } catch(e) {}
-
-  // Metodo 3: JSONP (fallback finale)
-  return new Promise((resolve) => {
-    const old = document.getElementById('jsonp-script');
-    if (old) old.remove();
-    const cbName = 'jsonpCb_' + Date.now();
-    window[cbName] = function(rows) {
-      delete window[cbName];
-      resolve(applyData(parseRows(rows)));
-    };
-    const s = document.createElement('script');
-    s.id = 'jsonp-script';
-    s.src = sheetsUrl + '?callback=' + cbName + '&t=' + Date.now();
-    s.onerror = () => {
-      delete window[cbName];
-      if (showMsg) showToast('⚠️ Impossibile sincronizzare — uso dati locali');
-      resolve(false);
-    };
-    document.head.appendChild(s);
-    setTimeout(() => { delete window[cbName]; resolve(false); }, 8000);
-  });
+async function loadFromSheet(showMsg) {
+  return loadFromGitHub(showMsg);
 }
 
 async function forceSync() {
   const btn = document.getElementById('sync-btn');
   btn.textContent = '⏳';
   btn.style.opacity = '0.6';
-  const ok = await loadFromSheet(true);
+  const ok = await loadFromGitHub(true);
   btn.textContent = '🔄 Sync';
   btn.style.opacity = '1';
   if (!ok) showToast('⚠️ Impossibile sincronizzare — controlla la connessione');
