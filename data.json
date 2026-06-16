@@ -43,7 +43,7 @@
     "name": "Crodino",
     "cat": "🥤 BIBITE",
     "min": 20,
-    "pxc": 24,
+    "pxc": 48,
     "pz": 24,
     "forn": "Cupra Bibite"
   },
@@ -115,7 +115,7 @@
     "name": "Esta Thé Brick Pesca",
     "cat": "🥤 BIBITE",
     "min": 24,
-    "pxc": 24,
+    "pxc": 72,
     "pz": 3,
     "forn": "Cupra Bibite"
   },
@@ -123,14 +123,14 @@
     "name": "Esta Thé Brick Limone",
     "cat": "🥤 BIBITE",
     "min": 24,
-    "pxc": 24,
+    "pxc": 72,
     "pz": 3,
     "forn": "Cupra Bibite"
   },
   {
     "name": "Monster",
     "cat": "🥤 BIBITE",
-    "min": 12,
+    "min": 10,
     "pxc": 24,
     "pz": 36,
     "forn": "Cupra Bibite"
