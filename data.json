@@ -1,0 +1,434 @@
+[
+  {
+    "name": "Acqua pet 1L Naturale",
+    "cat": "💧 ACQUE",
+    "min": 24,
+    "pxc": 12,
+    "pz": 20,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Acqua pet 0.5L Naturale",
+    "cat": "💧 ACQUE",
+    "min": 48,
+    "pxc": 24,
+    "pz": 4,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Acqua pet 1L Frizzante",
+    "cat": "💧 ACQUE",
+    "min": 280,
+    "pxc": 12,
+    "pz": 18,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Acqua pet 0.5L Frizzante",
+    "cat": "💧 ACQUE",
+    "min": 48,
+    "pxc": 24,
+    "pz": 4,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Acqua Tonica",
+    "cat": "💧 ACQUE",
+    "min": 24,
+    "pxc": 24,
+    "pz": 12,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Crodino",
+    "cat": "💧 ACQUE",
+    "min": 20,
+    "pxc": 24,
+    "pz": 24,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Coca Cola 1.5L",
+    "cat": "🥤 BIBITE",
+    "min": 12,
+    "pxc": 6,
+    "pz": 5,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Coca Cola litro vetro",
+    "cat": "🥤 BIBITE",
+    "min": 12,
+    "pxc": 12,
+    "pz": 1,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Coca Cola 33cl",
+    "cat": "🥤 BIBITE",
+    "min": 24,
+    "pxc": 24,
+    "pz": 2,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Coca Cola Zero 33cl",
+    "cat": "🥤 BIBITE",
+    "min": 24,
+    "pxc": 24,
+    "pz": 1,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Coca Cola Zero Zero 33cl",
+    "cat": "🥤 BIBITE",
+    "min": 24,
+    "pxc": 24,
+    "pz": 1,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Fanta 33cl",
+    "cat": "🥤 BIBITE",
+    "min": 24,
+    "pxc": 24,
+    "pz": 2,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Sprite 33cl",
+    "cat": "🥤 BIBITE",
+    "min": 24,
+    "pxc": 24,
+    "pz": 12,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Lemon Soda",
+    "cat": "🥤 BIBITE",
+    "min": 24,
+    "pxc": 24,
+    "pz": 0,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Esta Thé Brick Pesca",
+    "cat": "🥤 BIBITE",
+    "min": 24,
+    "pxc": 24,
+    "pz": 3,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Esta Thé Brick Limone",
+    "cat": "🥤 BIBITE",
+    "min": 24,
+    "pxc": 24,
+    "pz": 3,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Monster",
+    "cat": "🥤 BIBITE",
+    "min": 12,
+    "pxc": 24,
+    "pz": 36,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Powerade Rossa 50cl",
+    "cat": "🥤 BIBITE",
+    "min": 12,
+    "pxc": 12,
+    "pz": 0,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Powerade Blu 50cl",
+    "cat": "🥤 BIBITE",
+    "min": 12,
+    "pxc": 12,
+    "pz": 0,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Powerade Arancione 50cl",
+    "cat": "🥤 BIBITE",
+    "min": 12,
+    "pxc": 12,
+    "pz": 0,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "RedBull 25cl",
+    "cat": "🥤 BIBITE",
+    "min": 24,
+    "pxc": 24,
+    "pz": 0,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "RedBull Zero 25cl",
+    "cat": "🥤 BIBITE",
+    "min": 12,
+    "pxc": 24,
+    "pz": 0,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Campari",
+    "cat": "🥤 BIBITE",
+    "min": 2,
+    "pxc": 6,
+    "pz": 1,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Birra alla spina (fusto)",
+    "cat": "🍺 BIRRE",
+    "min": 1,
+    "pxc": 1,
+    "pz": 0,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Heineken 33cl",
+    "cat": "🍺 BIRRE",
+    "min": 24,
+    "pxc": 24,
+    "pz": 1,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Tennent's 33cl",
+    "cat": "🍺 BIRRE",
+    "min": 24,
+    "pxc": 24,
+    "pz": 0,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Ichnusa non filtrata 33cl",
+    "cat": "🍺 BIRRE",
+    "min": 24,
+    "pxc": 24,
+    "pz": 1,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Messina Cristalli Sale 33cl",
+    "cat": "🍺 BIRRE",
+    "min": 24,
+    "pxc": 24,
+    "pz": 0,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Corona 33cl",
+    "cat": "🍺 BIRRE",
+    "min": 24,
+    "pxc": 24,
+    "pz": 1,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Ceres 33cl",
+    "cat": "🍺 BIRRE",
+    "min": 24,
+    "pxc": 24,
+    "pz": 0,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Moretti Filtrata Freddo 33cl",
+    "cat": "🍺 BIRRE",
+    "min": 24,
+    "pxc": 24,
+    "pz": 1,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Moretti Filtrata Freddo 66cl",
+    "cat": "🍺 BIRRE",
+    "min": 15,
+    "pxc": 15,
+    "pz": 0,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Moretti Rossa 33cl",
+    "cat": "🍺 BIRRE",
+    "min": 24,
+    "pxc": 24,
+    "pz": 0,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Moretti Bionda 33cl",
+    "cat": "🍺 BIRRE",
+    "min": 24,
+    "pxc": 24,
+    "pz": 0,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Moretti Bionda 66cl",
+    "cat": "🍺 BIRRE",
+    "min": 15,
+    "pxc": 15,
+    "pz": 0,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Peroni 33cl",
+    "cat": "🍺 BIRRE",
+    "min": 24,
+    "pxc": 24,
+    "pz": 0,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Peroni 66cl",
+    "cat": "🍺 BIRRE",
+    "min": 15,
+    "pxc": 15,
+    "pz": 0,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Raffo 33cl",
+    "cat": "🍺 BIRRE",
+    "min": 24,
+    "pxc": 24,
+    "pz": 1,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Messina Vivace 33cl",
+    "cat": "🍺 BIRRE",
+    "min": 24,
+    "pxc": 24,
+    "pz": 1,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Leffe 33cl",
+    "cat": "🍺 BIRRE",
+    "min": 24,
+    "pxc": 24,
+    "pz": 0,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Birra senza Glutine 33cl",
+    "cat": "🍺 BIRRE",
+    "min": 12,
+    "pxc": 24,
+    "pz": 0,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Hoegaarden Bianca 33cl",
+    "cat": "🍺 BIRRE",
+    "min": 24,
+    "pxc": 24,
+    "pz": 0,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Aperol",
+    "cat": "🍹 ALCOLICI & APERITIVI",
+    "min": 20,
+    "pxc": 11,
+    "pz": 1,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Amaro del Capo",
+    "cat": "🍹 ALCOLICI & APERITIVI",
+    "min": 24,
+    "pxc": 24,
+    "pz": 3,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Jagermeister 100cl",
+    "cat": "🍹 ALCOLICI & APERITIVI",
+    "min": 1,
+    "pxc": 1,
+    "pz": 0,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Grappa Lucano Barocca 70cl",
+    "cat": "🍹 ALCOLICI & APERITIVI",
+    "min": 1,
+    "pxc": 1,
+    "pz": 0,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Molinari Sambuca 100cl",
+    "cat": "🍹 ALCOLICI & APERITIVI",
+    "min": 1,
+    "pxc": 1,
+    "pz": 0,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Amita Ace 20cl",
+    "cat": "🧃 SUCCHI AMITA",
+    "min": 20,
+    "pxc": 24,
+    "pz": 0,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Amita Ananas 20cl",
+    "cat": "🧃 SUCCHI AMITA",
+    "min": 20,
+    "pxc": 24,
+    "pz": 0,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Amita Arancia 20cl",
+    "cat": "🧃 SUCCHI AMITA",
+    "min": 20,
+    "pxc": 24,
+    "pz": 0,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Amita Pesca 20cl",
+    "cat": "🧃 SUCCHI AMITA",
+    "min": 20,
+    "pxc": 24,
+    "pz": 0,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Amita Pera 20cl",
+    "cat": "🧃 SUCCHI AMITA",
+    "min": 20,
+    "pxc": 24,
+    "pz": 0,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Amita Albicocca 20cl",
+    "cat": "🧃 SUCCHI AMITA",
+    "min": 20,
+    "pxc": 24,
+    "pz": 0,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Amita Mirtillo 20cl",
+    "cat": "🧃 SUCCHI AMITA",
+    "min": 20,
+    "pxc": 24,
+    "pz": 0,
+    "forn": "Cupra Bibite"
+  }
+]
