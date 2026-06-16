@@ -162,7 +162,7 @@
   {
     "name": "RedBull 25cl",
     "cat": "🥤 BIBITE",
-    "min": 24,
+    "min": 10,
     "pxc": 24,
     "pz": 0,
     "forn": "Cupra Bibite"
@@ -170,7 +170,7 @@
   {
     "name": "RedBull Zero 25cl",
     "cat": "🥤 BIBITE",
-    "min": 12,
+    "min": 10,
     "pxc": 24,
     "pz": 0,
     "forn": "Cupra Bibite"
@@ -178,8 +178,8 @@
   {
     "name": "Campari",
     "cat": "🥤 BIBITE",
-    "min": 2,
-    "pxc": 6,
+    "min": 1,
+    "pxc": 1,
     "pz": 1,
     "forn": "Cupra Bibite"
   },
@@ -256,14 +256,6 @@
     "forn": "Cupra Bibite"
   },
   {
-    "name": "Moretti Rossa 33cl",
-    "cat": "🍺 BIRRE",
-    "min": 24,
-    "pxc": 24,
-    "pz": 0,
-    "forn": "Cupra Bibite"
-  },
-  {
     "name": "Moretti Bionda 33cl",
     "cat": "🍺 BIRRE",
     "min": 24,
@@ -300,7 +292,7 @@
     "cat": "🍺 BIRRE",
     "min": 24,
     "pxc": 24,
-    "pz": 1,
+    "pz": 0,
     "forn": "Cupra Bibite"
   },
   {
@@ -314,17 +306,9 @@
   {
     "name": "Leffe 33cl",
     "cat": "🍺 BIRRE",
-    "min": 24,
+    "min": 10,
     "pxc": 24,
-    "pz": 0,
-    "forn": "Cupra Bibite"
-  },
-  {
-    "name": "Birra senza Glutine 33cl",
-    "cat": "🍺 BIRRE",
-    "min": 12,
-    "pxc": 24,
-    "pz": 0,
+    "pz": 1,
     "forn": "Cupra Bibite"
   },
   {
@@ -338,17 +322,17 @@
   {
     "name": "Aperol",
     "cat": "🍹 ALCOLICI & APERITIVI",
-    "min": 20,
-    "pxc": 11,
-    "pz": 1,
+    "min": 2,
+    "pxc": 1,
+    "pz": 0,
     "forn": "Cupra Bibite"
   },
   {
     "name": "Amaro del Capo",
     "cat": "🍹 ALCOLICI & APERITIVI",
-    "min": 24,
-    "pxc": 24,
-    "pz": 3,
+    "min": 1,
+    "pxc": 1,
+    "pz": 1,
     "forn": "Cupra Bibite"
   },
   {
@@ -356,7 +340,7 @@
     "cat": "🍹 ALCOLICI & APERITIVI",
     "min": 1,
     "pxc": 1,
-    "pz": 0,
+    "pz": 3,
     "forn": "Cupra Bibite"
   },
   {
@@ -378,7 +362,7 @@
   {
     "name": "Amita Ace 20cl",
     "cat": "🧃 SUCCHI AMITA",
-    "min": 20,
+    "min": 12,
     "pxc": 24,
     "pz": 0,
     "forn": "Cupra Bibite"
@@ -386,7 +370,7 @@
   {
     "name": "Amita Ananas 20cl",
     "cat": "🧃 SUCCHI AMITA",
-    "min": 20,
+    "min": 12,
     "pxc": 24,
     "pz": 0,
     "forn": "Cupra Bibite"
@@ -394,7 +378,7 @@
   {
     "name": "Amita Arancia 20cl",
     "cat": "🧃 SUCCHI AMITA",
-    "min": 20,
+    "min": 12,
     "pxc": 24,
     "pz": 0,
     "forn": "Cupra Bibite"
@@ -402,7 +386,7 @@
   {
     "name": "Amita Pesca 20cl",
     "cat": "🧃 SUCCHI AMITA",
-    "min": 20,
+    "min": 12,
     "pxc": 24,
     "pz": 0,
     "forn": "Cupra Bibite"
@@ -410,7 +394,7 @@
   {
     "name": "Amita Pera 20cl",
     "cat": "🧃 SUCCHI AMITA",
-    "min": 20,
+    "min": 12,
     "pxc": 24,
     "pz": 0,
     "forn": "Cupra Bibite"
@@ -418,7 +402,7 @@
   {
     "name": "Amita Albicocca 20cl",
     "cat": "🧃 SUCCHI AMITA",
-    "min": 20,
+    "min": 12,
     "pxc": 24,
     "pz": 0,
     "forn": "Cupra Bibite"
@@ -426,7 +410,15 @@
   {
     "name": "Amita Mirtillo 20cl",
     "cat": "🧃 SUCCHI AMITA",
-    "min": 20,
+    "min": 12,
+    "pxc": 24,
+    "pz": 0,
+    "forn": "Cupra Bibite"
+  },
+  {
+    "name": "Amita Mirtillo 20cl",
+    "cat": "🧃 SUCCHI AMITA",
+    "min": 12,
     "pxc": 24,
     "pz": 0,
     "forn": "Cupra Bibite"
