@@ -637,7 +637,9 @@ let products = [];
 const GH_OWNER = 'marcogenualdo99';
 const GH_REPO  = 'MAGAZZINO-BAR-DEF';
 const GH_FILE  = 'data.json';
-let ghToken = localStorage.getItem('gr_gh_token') || '';
+// Token GitHub — inserisci qui il tuo token personale
+const GH_TOKEN_DEFAULT = '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';
+let ghToken = localStorage.getItem('gr_gh_token') || GH_TOKEN_DEFAULT;
 let modified = false;
 
 // ── DATI DEFAULT ─────────────────────────────────────────────────────────────
@@ -701,16 +703,22 @@ const DEFAULT_PRODUCTS = [
 
 // ── INIT ─────────────────────────────────────────────────────────────────────
 async function init() {
+  // Salva automaticamente il token di default nel localStorage
+  if (!localStorage.getItem('gr_gh_token') && GH_TOKEN_DEFAULT !== 'INSERISCI_QUI_IL_TUO_TOKEN') {
+    localStorage.setItem('gr_gh_token', GH_TOKEN_DEFAULT);
+    ghToken = GH_TOKEN_DEFAULT;
+  }
+
   // Carica subito i dati locali per mostrare qualcosa
   const saved = localStorage.getItem('gr_products');
   products = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
   render();
 
   // Poi aggiorna sempre da GitHub se il token è presente
-  if (ghToken) {
-    document.getElementById('gh-token').value = ghToken;
+  if (ghToken && ghToken !== 'INSERISCI_QUI_IL_TUO_TOKEN') {
+    const inp = document.getElementById('gh-token');
+    if (inp) inp.value = ghToken;
     document.getElementById('connect-status').textContent = '✅ GitHub connesso';
-    // Aggiorna silenziosamente in background
     await loadFromGitHub(false);
   }
 }
