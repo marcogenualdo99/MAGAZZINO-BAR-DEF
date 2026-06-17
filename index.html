@@ -276,45 +276,31 @@ main { max-width: 750px; margin: 0 auto; padding: 16px 14px 100px; }
 </head>
 <body>
 
-<!-- ══ LOGIN ══════════════════════════════════════════════════════════════════ -->
+<!-- ══ ACCESSO (gestito centralmente dalla Hub Garden River) ═══════════════════ -->
 <div id="login-screen" class="login-screen">
   <img class="login-logo" alt="Garden River" src="logo-login.png" onerror="this.style.display='none'">
   <div class="login-title">Magazzino Bar</div>
   <div class="login-sub">Centro Vacanze Garden River</div>
-  <div class="login-card">
-    <div id="login-step-op">
-      <label class="login-label">Chi sei?</label>
-      <select class="login-select" id="login-sel">
-        <option value="">— Seleziona operatore —</option>
-      </select>
-      <button class="btn-primary" onclick="loginStepPin()">Avanti</button>
-    </div>
-    <div id="login-step-pin" style="display:none">
-      <div class="pin-label" id="pin-label">Inserisci il tuo PIN</div>
-      <div class="pin-dots" id="pin-dots">
-        <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div>
-        <div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div>
-        <div class="pin-dot" id="pd4"></div><div class="pin-dot" id="pd5"></div>
-      </div>
-      <div class="pin-keypad">
-        <button class="pin-key" onclick="pinPress('1')">1</button>
-        <button class="pin-key" onclick="pinPress('2')">2</button>
-        <button class="pin-key" onclick="pinPress('3')">3</button>
-        <button class="pin-key" onclick="pinPress('4')">4</button>
-        <button class="pin-key" onclick="pinPress('5')">5</button>
-        <button class="pin-key" onclick="pinPress('6')">6</button>
-        <button class="pin-key" onclick="pinPress('7')">7</button>
-        <button class="pin-key" onclick="pinPress('8')">8</button>
-        <button class="pin-key" onclick="pinPress('9')">9</button>
-        <button class="pin-key empty"></button>
-        <button class="pin-key" onclick="pinPress('0')">0</button>
-        <button class="pin-key del" onclick="pinDel()">&#9003;</button>
-      </div>
-      <div class="login-error" id="pin-error"></div>
-      <div style="text-align:center;margin-top:12px">
-        <span style="font-size:12px;color:var(--gray-500);cursor:pointer;text-decoration:underline" onclick="loginBack()">Cambia operatore</span>
-      </div>
-    </div>
+  <div class="login-card" style="text-align:center">
+    <p style="font-size:14px;color:var(--gray-700);line-height:1.6;margin-bottom:20px">
+      L'accesso a questa app è gestito dalla <strong>Hub Garden River</strong>.<br>
+      Accedi da lì e seleziona il tuo profilo per entrare automaticamente qui.
+    </p>
+    <button class="btn-primary" onclick="location.href=HUB_URL">Vai alla Hub</button>
+  </div>
+</div>
+
+<!-- ══ ACCESSO NEGATO (utente loggato ma senza permessi su questo modulo) ══════ -->
+<div id="no-access-screen" class="login-screen hidden">
+  <img class="login-logo" alt="Garden River" src="logo-login.png" onerror="this.style.display='none'">
+  <div class="login-title">Magazzino Bar</div>
+  <div class="login-sub">Centro Vacanze Garden River</div>
+  <div class="login-card" style="text-align:center">
+    <p style="font-size:14px;color:var(--gray-700);line-height:1.6;margin-bottom:20px">
+      Il tuo profilo non ha permessi per usare questa app.<br>
+      Chiedi all'amministratore di abilitarti dalla Hub.
+    </p>
+    <button class="btn-primary" onclick="location.href=HUB_URL">Torna alla Hub</button>
   </div>
 </div>
 
@@ -329,7 +315,7 @@ main { max-width: 750px; margin: 0 auto; padding: 16px 14px 100px; }
       </div>
     </div>
     <div class="header-btns">
-      <button class="hbtn ghost icon" onclick="switchTab('setup')" title="Impostazioni">&#9881;</button>
+      <button class="hbtn ghost icon" id="btn-setup" onclick="switchTab('setup')" title="Impostazioni">&#9881;</button>
       <div id="sync-status" style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.7)">
         <span id="sync-dot" style="width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.35);flex-shrink:0;transition:background .3s"></span>
         <span id="sync-label" style="display:none"></span>
@@ -476,13 +462,9 @@ main { max-width: 750px; margin: 0 auto; padding: 16px 14px 100px; }
       <div id="debug-panel" style="display:none;margin-top:12px;background:#1e1e2e;border-radius:var(--radius-sm);padding:14px;font-family:monospace;font-size:11px;color:#cdd6f4;line-height:1.7;word-break:break-all;max-height:240px;overflow-y:auto"></div>
     </div>
     <div class="card">
-      <h3>Operatori</h3>
-      <p class="subtitle">Gestisci chi accede all'app e i relativi PIN</p>
-      <div style="display:flex;gap:8px;margin-bottom:12px">
-        <input type="text" id="new-op" placeholder="Nome operatore…" style="flex:1;height:48px;padding:0 14px;border:1.5px solid var(--gray-300);border-radius:var(--radius-sm);font-size:14px;font-family:var(--font);outline:none">
-        <button onclick="addOperatore()" style="height:48px;padding:0 18px;background:var(--green-700);color:white;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font)">+ Aggiungi</button>
-      </div>
-      <div id="operatori-list"></div>
+      <h3>Utenti e permessi</h3>
+      <p class="subtitle">Operatori, ruoli e permessi di accesso sono gestiti centralmente dalla Hub Garden River — non più da qui.</p>
+      <button onclick="location.href=HUB_URL+'?go=permessi'" style="width:100%;height:48px;background:var(--green-700);color:white;border:none;border-radius:var(--radius-xl);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font)">Apri Hub → Utenti e permessi</button>
     </div>
   </div>
 
@@ -504,8 +486,20 @@ main { max-width: 750px; margin: 0 auto; padding: 16px 14px 100px; }
 
 <script>
 // ── COSTANTI ─────────────────────────────────────────────────────────────────
-const ADMIN_NAME = 'Marco';
-const PIN_LENGTH = 6;
+// 👉 Se la Hub è ospitata in un percorso diverso, aggiorna questo URL.
+//    Deve trovarsi sullo STESSO DOMINIO di questa app, altrimenti il login
+//    automatico (single sign-on) non può funzionare (sessionStorage è legato
+//    all'origine — protocollo+dominio+porta).
+const HUB_URL = 'https://marcogenualdo99.github.io/garden-river-hub/';
+// Identifica questo modulo nella mappa permessi gestita dalla Hub.
+const MODULE_ID = 'magazzino';
+// Tutte le sezioni di questa app che possono essere abilitate/disabilitate
+// per singolo operatore dalla Hub.
+const SECTION_IDS = ['giacenze','ordine','aggiungi','impostazioni','categorie','setup'];
+
+let hubSession        = null;              // { nome, ruolo } — impostato dalla Hub al login
+let hubPermessi        = { sezioni: {} };  // permessi di questo operatore per questo modulo
+let allowedSections    = new Set(SECTION_IDS);
 
 // Colori categoria: header hex, sfondo righe pari, sfondo righe dispari
 const CAT_COLORS = {
@@ -527,10 +521,7 @@ const DEFAULT_CATS = Object.keys(CAT_COLORS);
 // ── STATO ─────────────────────────────────────────────────────────────────────
 let products         = [];
 let customCats        = [];
-let operatori          = ['Marco', 'Giulia', 'Luca', 'Sara'];
 let currentOperatore   = null;
-let loginTargetOp      = null;
-let pinBuffer           = '';
 let activeFilter        = null; // 'red' | 'amber' | 'green' | null
 
 // ── DATI DI DEFAULT (primo avvio, prima che Firestore risponda) ─────────────
@@ -591,7 +582,7 @@ const DEFAULT_PRODUCTS = [
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
-function isAdmin() { return currentOperatore === ADMIN_NAME; }
+function isAdmin() { return !!hubSession && hubSession.ruolo === 'admin'; }
 
 function stato(p) {
   if (p.pz === 0)   return 'red';
@@ -622,7 +613,6 @@ function waitForFirebase() {
 }
 
 let _unsubProducts = null;
-let _unsubOperatori = null;
 let _unsubMeta = null;
 
 function setSyncStatus(state) {
@@ -664,15 +654,6 @@ async function startRealtimeSync() {
       setSyncStatus('error');
     });
 
-    _unsubOperatori = onSnapshot(collection(db, 'operatori'), (snap) => {
-      if (!snap.empty) {
-        operatori = snap.docs.map(d => d.data().nome).filter(Boolean);
-        if (!operatori.length) operatori = ['Marco','Giulia','Luca','Sara'];
-      }
-      initLogin();
-      if (document.getElementById('sec-setup').classList.contains('active')) renderOperatoriList();
-    }, (err) => { console.error('Errore listener operatori:', err); });
-
     _unsubMeta = onSnapshot(collection(db, 'categorie'), (snap) => {
       customCats = snap.docs.map(d => d.data().nome).filter(Boolean);
       populateCatSelect();
@@ -689,22 +670,16 @@ async function forceRefresh(silent) {
   await waitForFirebase();
   const { db, collection, getDocs } = window._fb;
   try {
-    const [snapP, snapOp, snapCat] = await Promise.all([
+    const [snapP, snapCat] = await Promise.all([
       getDocs(collection(db, 'prodotti')),
-      getDocs(collection(db, 'operatori')),
       getDocs(collection(db, 'categorie')),
     ]);
     products = snapP.docs.map(d => ({ id: d.id, ...d.data() }));
-    if (!snapOp.empty) {
-      operatori = snapOp.docs.map(d => d.data().nome).filter(Boolean);
-      if (!operatori.length) operatori = ['Marco','Giulia','Luca','Sara'];
-    }
     customCats = snapCat.docs.map(d => d.data().nome).filter(Boolean);
     populateCatSelect();
     render();
     if (document.getElementById('sec-impostazioni').classList.contains('active')) renderImpostazioni();
     if (document.getElementById('sec-categorie').classList.contains('active')) renderCatManager();
-    if (document.getElementById('sec-setup').classList.contains('active')) renderOperatoriList();
     setSyncStatus('live');
     if (!silent) showToast('Dati aggiornati');
   } catch(e) {
@@ -723,12 +698,6 @@ async function ensureDefaultData() {
   await waitForFirebase();
   const { db, collection, getDocs, setDoc, doc } = window._fb;
   try {
-    const snapOp = await getDocs(collection(db, 'operatori'));
-    if (snapOp.empty) {
-      for (const nome of ['Marco','Giulia','Luca','Sara']) {
-        await setDoc(doc(db, 'operatori', nome), { nome });
-      }
-    }
     const snapP = await getDocs(collection(db, 'prodotti'));
     if (snapP.empty) {
       for (const p of DEFAULT_PRODUCTS) {
@@ -750,16 +719,6 @@ async function fsDeleteProduct(id) {
   await waitForFirebase();
   const { db, doc, deleteDoc } = window._fb;
   await deleteDoc(doc(db, 'prodotti', id));
-}
-async function fsAddOperatore(nome) {
-  await waitForFirebase();
-  const { db, doc, setDoc } = window._fb;
-  await setDoc(doc(db, 'operatori', nome), { nome });
-}
-async function fsDeleteOperatore(nome) {
-  await waitForFirebase();
-  const { db, doc, deleteDoc } = window._fb;
-  await deleteDoc(doc(db, 'operatori', nome));
 }
 async function fsAddCategoria(nome) {
   await waitForFirebase();
@@ -1124,147 +1083,80 @@ function sendWhatsApp(fornId) {
   window.open(`https://wa.me/?text=${encoded}`, '_blank');
 }
 
-// ── LOGIN / OPERATORI / PIN ────────────────────────────────────────────────────
+// ── SESSIONE HUB / PERMESSI SEZIONI ───────────────────────────────────────────
+function loadHubSession() {
+  try {
+    const raw = sessionStorage.getItem('gr_session');
+    if (!raw) return false;
+    const parsed = JSON.parse(raw);
+    if (!parsed || !parsed.nome) return false;
+    hubSession = parsed;
+    const permRaw = sessionStorage.getItem('gr_permessi');
+    const perm = permRaw ? JSON.parse(permRaw) : {};
+    hubPermessi = (perm.moduli && perm.moduli[MODULE_ID]) || { sezioni: {} };
+    return true;
+  } catch(e) { return false; }
+}
+
+function computeAllowedSections() {
+  const admin = isAdmin();
+  allowedSections = new Set();
+  SECTION_IDS.forEach(id => {
+    const sez = hubPermessi.sezioni || {};
+    const ok = admin || sez[id] !== false; // non specificato = consentito di default
+    if (ok) allowedSections.add(id);
+  });
+}
+
+const TAB_EL_BY_SECTION = {
+  giacenze: 'tab-giacenze', ordine: 'tab-ordine', aggiungi: 'tab-aggiungi',
+  impostazioni: 'tab-impostazioni', categorie: 'tab-categorie', setup: 'btn-setup'
+};
+function applySectionVisibility() {
+  Object.entries(TAB_EL_BY_SECTION).forEach(([sec, elId]) => {
+    const el = document.getElementById(elId);
+    if (el) el.style.display = allowedSections.has(sec) ? '' : 'none';
+  });
+}
+
 function initLogin() {
-  const sel = document.getElementById('login-sel');
-  const prevValue = sel.value;
-  sel.innerHTML = '<option value="">— Seleziona operatore —</option>' +
-    operatori.map(op=>`<option value="${op}">${op}</option>`).join('');
-  if (operatori.includes(prevValue)) sel.value = prevValue;
-
-  const saved = sessionStorage.getItem('mb_operatore');
-  if (saved && operatori.includes(saved)) {
-    currentOperatore = saved;
-    document.getElementById('login-screen').classList.add('hidden');
-    applyRole();
-  } else if (!currentOperatore) {
+  if (!loadHubSession()) {
     document.getElementById('login-screen').classList.remove('hidden');
+    document.getElementById('no-access-screen').classList.add('hidden');
+    return;
   }
-}
-
-function loginStepPin() {
-  const op = document.getElementById('login-sel').value;
-  if (!op) { showToast('Seleziona un operatore'); return; }
-  loginTargetOp = op; pinBuffer = '';
-  const pins = JSON.parse(localStorage.getItem('mb_pins')||'{}');
-  if (pins[op] && pins[op].length !== PIN_LENGTH) {
-    delete pins[op];
-    localStorage.setItem('mb_pins', JSON.stringify(pins));
-  }
-  const hasPIN = !!pins[op] && pins[op].length === PIN_LENGTH;
-  document.getElementById('pin-label').textContent = hasPIN ? `PIN di ${op}` : `Imposta PIN per ${op}`;
-  document.getElementById('login-step-op').style.display   = 'none';
-  document.getElementById('login-step-pin').style.display  = 'block';
-  document.getElementById('pin-error').textContent = '';
-  updatePinDots();
-}
-
-function loginBack() {
-  pinBuffer = ''; loginTargetOp = null;
-  document.getElementById('login-step-pin').style.display = 'none';
-  document.getElementById('login-step-op').style.display  = 'block';
-  document.getElementById('pin-error').textContent = '';
-  updatePinDots();
-}
-
-function pinPress(d) {
-  if (pinBuffer.length >= PIN_LENGTH) return;
-  pinBuffer += d; updatePinDots();
-  if (pinBuffer.length === PIN_LENGTH) setTimeout(checkPin, 120);
-}
-function pinDel() {
-  pinBuffer = pinBuffer.slice(0,-1); updatePinDots();
-  document.getElementById('pin-error').textContent = '';
-  for(let i=0;i<PIN_LENGTH;i++) document.getElementById('pd'+i).classList.remove('error');
-}
-function updatePinDots() {
-  for(let i=0;i<PIN_LENGTH;i++){
-    const d = document.getElementById('pd'+i);
-    d.classList.toggle('filled', i < pinBuffer.length);
-    d.classList.remove('error');
-  }
-}
-function checkPin() {
-  const pins = JSON.parse(localStorage.getItem('mb_pins')||'{}');
-  if (!pins[loginTargetOp]) {
-    pins[loginTargetOp] = pinBuffer;
-    localStorage.setItem('mb_pins', JSON.stringify(pins));
-    loginSuccess(loginTargetOp); return;
-  }
-  if (pinBuffer === pins[loginTargetOp]) {
-    loginSuccess(loginTargetOp);
-  } else {
-    for(let i=0;i<PIN_LENGTH;i++) document.getElementById('pd'+i).classList.add('error');
-    document.getElementById('pin-error').textContent = 'PIN non corretto';
-    setTimeout(()=>{ pinBuffer=''; updatePinDots(); document.getElementById('pin-error').textContent=''; }, 1000);
-  }
-}
-function loginSuccess(op) {
-  currentOperatore = op;
-  sessionStorage.setItem('mb_operatore', op);
+  currentOperatore = hubSession.nome;
   document.getElementById('login-screen').classList.add('hidden');
-  applyRole(); showToast('Benvenuto, ' + op + '!');
+  computeAllowedSections();
+  if (allowedSections.size === 0) {
+    document.getElementById('no-access-screen').classList.remove('hidden');
+    return;
+  }
+  document.getElementById('no-access-screen').classList.add('hidden');
+  applySectionVisibility();
+  applyRole();
+  const activeEl = document.querySelector('.section.active');
+  const activeId = activeEl ? activeEl.id.replace('sec-','') : null;
+  if (!activeId || !allowedSections.has(activeId)) {
+    const first = SECTION_IDS.find(id => allowedSections.has(id));
+    if (first) switchTab(first);
+  }
 }
+
 function doLogout() {
-  showModal('Cambio operatore', 'Vuoi uscire come ' + (currentOperatore || '') + '? Dovrai reinserire il PIN.',
-    'Esci', 'var(--red)', _clearSession);
+  showModal('Cambio operatore', 'Vuoi uscire e tornare alla Hub Garden River?',
+    'Esci', 'var(--red)', () => {
+      sessionStorage.removeItem('gr_session');
+      sessionStorage.removeItem('gr_permessi');
+      location.href = HUB_URL;
+    });
 }
-function _clearSession() {
-  currentOperatore = null;
-  sessionStorage.removeItem('mb_operatore');
-  pinBuffer = ''; loginTargetOp = null;
-  document.getElementById('login-step-pin').style.display = 'none';
-  document.getElementById('login-step-op').style.display  = 'block';
-  document.getElementById('login-sel').value = '';
-  updatePinDots();
-  document.getElementById('pin-error').textContent = '';
-  document.getElementById('login-screen').classList.remove('hidden');
-}
+
 function applyRole() {
   const admin = isAdmin();
   document.getElementById('header-avatar').textContent = (currentOperatore||'?').slice(0,2).toUpperCase();
   document.getElementById('header-name').textContent   = currentOperatore || '';
   document.getElementById('header-role').textContent   = admin ? 'Amministratore' : 'Operatore';
-}
-function resetPin(op) {
-  if (!isAdmin()) { showToast("Solo l'amministratore può resettare i PIN"); return; }
-  const pins = JSON.parse(localStorage.getItem('mb_pins')||'{}');
-  delete pins[op];
-  localStorage.setItem('mb_pins', JSON.stringify(pins));
-  showToast('PIN di ' + op + ' resettato');
-  renderOperatoriList();
-}
-
-async function addOperatore() {
-  const inp = document.getElementById('new-op'); const nome = inp.value.trim();
-  if (!nome) { showToast('Inserisci un nome'); return; }
-  if (operatori.includes(nome)) { showToast('Operatore già presente'); return; }
-  try { await fsAddOperatore(nome); inp.value = ''; showToast(`${nome} aggiunto!`); }
-  catch(e) { showToast('Errore salvataggio'); }
-}
-function deleteOperatore(nome) {
-  if (!isAdmin()) { showToast("Solo l'amministratore può rimuovere operatori"); return; }
-  if (nome===ADMIN_NAME) { showToast("Non puoi rimuovere l'amministratore"); return; }
-  if (operatori.length<=1) { showToast('Almeno un operatore richiesto'); return; }
-  showModal('Rimuovi operatore', `Rimuovere ${nome} dalla lista operatori?`, 'Rimuovi', 'var(--red)',
-    async () => {
-      try { await fsDeleteOperatore(nome); showToast(`${nome} rimosso`); }
-      catch(e) { showToast('Errore rimozione'); }
-    });
-}
-function renderOperatoriList() {
-  const pins = JSON.parse(localStorage.getItem('mb_pins')||'{}');
-  const admin = isAdmin();
-  document.getElementById('operatori-list').innerHTML = operatori.map(op=>{
-    const hasPIN=!!pins[op] && pins[op].length===PIN_LENGTH; const isAdm=op===ADMIN_NAME;
-    return `<div style="display:flex;align-items:center;gap:8px;padding:12px 0;border-bottom:1px solid var(--gray-100)">
-      <div style="width:34px;height:34px;border-radius:50%;background:${isAdm?'var(--green-700)':'var(--gray-100)'};color:${isAdm?'var(--white)':'var(--gray-500)'};font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${op.slice(0,2).toUpperCase()}</div>
-      <span style="flex:1;font-size:14px;font-weight:600">${op}${isAdm?` <span style="font-size:10px;color:var(--orange);font-weight:700;text-transform:uppercase;margin-left:4px">Admin</span>`:''}</span>
-      <span style="font-size:11px;color:${hasPIN?'var(--green-ok)':'var(--amber)'};font-weight:600">${hasPIN?'PIN ok':'Nessun PIN'}</span>
-      ${admin&&hasPIN?`<button onclick="resetPin('${op}')" style="height:28px;padding:0 10px;border:1px solid var(--amber-bd);background:var(--amber-bg);color:var(--amber);border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font)">Reset</button>`:''}
-      ${admin&&!isAdm?`<button onclick="deleteOperatore('${op}')" style="width:30px;height:30px;border:none;background:var(--red-bg);color:var(--red);border-radius:50%;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center">&#10005;</button>`:''}
-    </div>`;
-  }).join('');
 }
 
 // ── MODAL ─────────────────────────────────────────────────────────────────────
@@ -1283,6 +1175,11 @@ function closeModal() { document.getElementById('modal-overlay').style.display =
 
 // ── TABS ─────────────────────────────────────────────────────────────────────
 function switchTab(id) {
+  if (SECTION_IDS.includes(id) && !allowedSections.has(id)) {
+    const fallback = SECTION_IDS.find(s => allowedSections.has(s));
+    if (!fallback) return; // nessuna sezione consentita: resta dove sei
+    id = fallback;
+  }
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.getElementById('sec-'+id).classList.add('active');
@@ -1290,7 +1187,6 @@ function switchTab(id) {
   if (tabBtn) tabBtn.classList.add('active');
   if (id === 'impostazioni') renderImpostazioni();
   if (id === 'categorie') renderCatManager();
-  if (id === 'setup') renderOperatoriList();
 }
 
 // ── DEBUG / TEST CONNESSIONE ──────────────────────────────────────────────────
